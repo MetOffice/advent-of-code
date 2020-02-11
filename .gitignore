@@ -136,3 +136,6 @@ dmypy.json
 # IDE related things
 # pycharm
 .idea
+
+# emacs stuff
+*~
