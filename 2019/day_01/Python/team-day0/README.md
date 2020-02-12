@@ -1,7 +1,7 @@
 Contributors
 ============
 
-Christopher Bennett
-Daisy Easton
-Rhiannon Davies
-Matt Shin
+* Christopher Bennett
+* Daisy Easton
+* Rhiannon Davies
+* Matt Shin
