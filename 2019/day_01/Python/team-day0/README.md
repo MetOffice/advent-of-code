@@ -2,6 +2,6 @@ Contributors
 ============
 
 Christopher Bennett
-Helen Davies
+Daisy Easton
 Rhiannon Davies
 Matt Shin
