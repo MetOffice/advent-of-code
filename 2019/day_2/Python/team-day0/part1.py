@@ -1,4 +1,6 @@
+from typing import List
 
 
-def intcode():
-    pass
+def intcode(input_data: List) -> List:
+
+    return input_data

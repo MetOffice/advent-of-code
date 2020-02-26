@@ -1,5 +1,5 @@
-import pytest
-from part1 import *
+from part1 import intcode
+
 
 def test_case_1():
     input_program = [1, 0, 0, 0, 99]

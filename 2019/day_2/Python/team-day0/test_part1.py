@@ -1,4 +1,4 @@
-from part1 import *
+from part1 import intcode
 
 
 def test_case_1():
