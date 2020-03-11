@@ -4,7 +4,7 @@ from part1 import calc_closest_intersection
 def test_case_1():
     wire_a = ["R8","U5","L5","D3"]
     wire_b = ["U7","R6","D4","L4"]
-    expected = 3
+    expected = 6
 
     assert calc_closest_intersection(wire_a, wire_b) == expected
 
