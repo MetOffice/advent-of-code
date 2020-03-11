@@ -23,3 +23,10 @@ def test_case_3():
     expected = 135
 
     assert calc_closest_intersection(wire_a, wire_b) == expected
+
+
+if __name__ == "__main__":
+    test_case_1()
+    test_case_2()
+    test_case_3()
+    print("All tests passed")
