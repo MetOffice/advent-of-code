@@ -13,5 +13,5 @@ def count_possible_passwords(min_: int, max_: int) -> int:
 if __name__ == "__main__":
     input_ = get_input()
     print(input_)
-    result = count_possible_passwords(input_.min, input_.max)
+    result = count_possible_passwords(int(input_.min), int(input_.max))
     print(result)
