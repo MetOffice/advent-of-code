@@ -16,7 +16,7 @@ import part1
 @mock.patch("part1.input")
 def test_input_output(mock_input, mock_print):
     program = ["3","0","4","0","99"]
-    input_ = "1234"
+    input_ = 1234
     mock_input.return_value = input_
     part1.intcode(program)
     mock_input.assert_called_once()
