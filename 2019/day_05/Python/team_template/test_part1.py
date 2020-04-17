@@ -51,3 +51,72 @@ def test_negative_number():
     actual = part1.intcode(input_)
 
     assert actual == expected
+
+# @mock.patch('part1.input', return_value=0)
+# def test_part2_example1():
+#     programme = ["3","12","6","12","15","1","13","14","13","4","13","99","-1","0","1","9"]
+#     expected = 0
+# 
+#     actual = part1.intcode(programme)
+# 
+#     assert actual == expected
+# 
+# @mock.patch('part1.input', return_value=99)
+# def test_part2_example2():
+#     programme = ["3","12","6","12","15","1","13","14","13","4","13","99","-1","0","1","9"]
+#     expected = 1
+# 
+#     actual = part1.intcode(programme)
+# 
+#     assert actual == expected
+# 
+# @mock.patch('part1.input', return_value=0)
+# def test_part2_example3():
+#     programme = ["3","3","1105","-1","9","1101","0","0","12","4","12","99","1"]
+#     expected = 0
+# 
+#     actual = part1.intcode(programme)
+# 
+#     assert actual == expected
+# 
+# @mock.patch('part1.input', return_value=99)
+# def test_part2_example4():
+#     programme = ["3","3","1105","-1","9","1101","0","0","12","4","12","99","1"]
+#     expected = 1
+# 
+#     actual = part1.intcode(programme)
+# 
+#     assert actual == expected
+
+@mock.patch("part1.print")
+@mock.patch('part1.input', return_value=7)
+def test_part2_example5(mock_input, mock_print):
+    programme = ["3","21","1008","21","8","20","1005","20","22","107","8","21","20","1006","20","31","1106","0","36","98","0","0","1002","21","125","20","4","20","1105","1","46","104","999","1105","1","46","1101","1000","1","20","4","20","1105","1","46","98","99"]
+
+    expected = 999
+
+    actual = part1.intcode(programme)
+
+    mock_print.assert_called_once_with(expected)
+
+@mock.patch("part1.print")
+@mock.patch('part1.input', return_value=8)
+def test_part2_example6(mock_input, mock_print):
+    programme = ["3","21","1008","21","8","20","1005","20","22","107","8","21","20","1006","20","31","1106","0","36","98","0","0","1002","21","125","20","4","20","1105","1","46","104","999","1105","1","46","1101","1000","1","20","4","20","1105","1","46","98","99"]
+
+    expected = 1000
+
+    actual = part1.intcode(programme)
+
+    mock_print.assert_called_once_with(expected)
+
+@mock.patch("part1.print")
+@mock.patch('part1.input', return_value=9)
+def test_part2_example7(mock_input, mock_print):
+    programme = ["3","21","1008","21","8","20","1005","20","22","107","8","21","20","1006","20","31","1106","0","36","98","0","0","1002","21","125","20","4","20","1105","1","46","104","999","1105","1","46","1101","1000","1","20","4","20","1105","1","46","98","99"]
+
+    expected = 1001
+
+    actual = part1.intcode(programme)
+
+    mock_print.assert_called_once_with(expected)

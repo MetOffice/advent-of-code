@@ -38,7 +38,47 @@ class Computer:
         value = self.get_address(parameter_modes[0], self.pointer + 1)
         print(self.program[value])
         self.pointer += 2
+
+    # opcode 5
+    def jump_if_true(self, parameter_modes):
+        value1 = self.program[self.get_address(parameter_modes[0], self.pointer + 1)]
+        value2 = self.program[self.get_address(parameter_modes[1], self.pointer + 2)]
+        if value1 != 0:
+            self.pointer = value2
+        else:
+            self.pointer += 3
+
+    # opcode 6
+    def jump_if_false(self, parameter_modes):
+        value1 = self.program[self.get_address(parameter_modes[0], self.pointer + 1)]
+        value2 = self.program[self.get_address(parameter_modes[1], self.pointer + 2)]
+        if value1 == 0:
+            self.pointer = value2
+        else:
+            self.pointer += 3
+
+    # opcode 7
+    def less_than(self, parameter_modes):
+        value1 = self.program[self.get_address(parameter_modes[0], self.pointer + 1)]
+        value2 = self.program[self.get_address(parameter_modes[1], self.pointer + 2)]
+        dest   = self.get_address(parameter_modes[2], self.pointer + 3)
+        if value1 < value2:
+            self.program[dest] = 1
+        else:
+            self.program[dest] = 0
+        self.pointer += 4
     
+    # opcode 8
+    def equals(self, parameter_modes):
+        value1 = self.program[self.get_address(parameter_modes[0], self.pointer + 1)]
+        value2 = self.program[self.get_address(parameter_modes[1], self.pointer + 2)]
+        dest   = self.get_address(parameter_modes[2], self.pointer + 3)
+        if value1 == value2:
+            self.program[dest] = 1
+        else:
+            self.program[dest] = 0
+        self.pointer += 4
+
     # opcode 99
     def die(self):
         self.running = False
@@ -80,6 +120,14 @@ class Computer:
             self.get_and_store_input(parameter_modes)
         elif opcode == 4:
             self.output_int(parameter_modes)
+        elif opcode == 5:
+            self.jump_if_true(parameter_modes)
+        elif opcode == 6:
+            self.jump_if_false(parameter_modes)
+        elif opcode == 7:
+            self.less_than(parameter_modes)
+        elif opcode == 8:
+            self.equals(parameter_modes)
         elif opcode == 99:
             self.die()
         else:
@@ -101,5 +149,4 @@ def intcode(input_data: List[str]) -> List:
 
 if __name__ == "__main__":
     input_data = get_input()
-    ID_input = 1
     intcode(input_data)
