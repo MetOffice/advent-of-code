@@ -25,7 +25,7 @@ def test_input_output(mock_input, mock_print):
 
 def test_access_modes_simple():
     input_ = ["1002","4","3","4","33"]
-    expected = ["1002", "4", "3", "4", "99"]
+    expected = [1002, 4, 3, 4, 99]
     end_state = part1.intcode(input_)
     assert end_state == expected
 
@@ -42,3 +42,12 @@ def test_run_diagnostic(mock_input, mock_print):
         assert (call == mock.call(0) or call == mock.call("0"))
     assert mock_print.call_args_list[-1] != mock.call(0)
     assert mock_print.call_args_list[-1] != mock.call("0")
+
+
+def test_negative_number():
+    input_ = ["1101","100","-1","4","0"]
+
+    expected = [1101,100,-1,4,99]
+    actual = part1.intcode(input_)
+
+    assert actual == expected

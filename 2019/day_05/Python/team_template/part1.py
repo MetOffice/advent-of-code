@@ -11,52 +11,75 @@ class Computer:
     # Function prototypes for opcodes
 
     # opcode 1
-    def add(self):
-        value1 = self.program[self.pointer + 1]
-        value2 = self.program[self.pointer + 2]
-        dest   = self.program[self.pointer + 3]
+    def add(self, parameter_modes):
+        value1 = self.program[self.get_address(parameter_modes[0], self.pointer + 1)]
+        value2 = self.program[self.get_address(parameter_modes[1], self.pointer + 2)]
+        dest   = self.get_address(parameter_modes[2], self.pointer + 3)
         self.program[dest] = value1 + value2
         self.pointer += 4
     
     # opcode 2
-    def mult(self):
-        value1 = self.program[self.pointer + 1]
-        value2 = self.program[self.pointer + 2]
-        dest   = self.program[self.pointer + 3]
+    def mult(self, parameter_modes):
+        value1 = self.program[self.get_address(parameter_modes[0], self.pointer + 1)]
+        value2 = self.program[self.get_address(parameter_modes[1], self.pointer + 2)]
+        dest   = self.get_address(parameter_modes[2], self.pointer + 3)
         self.program[dest] = value1 * value2
         self.pointer += 4
     
     # opcode 3
-    def get_and_store_input(self):
-        dest = self.program[self.pointer + 1]
+    def get_and_store_input(self, parameter_modes):
+        dest = self.get_address(parameter_modes[0], self.pointer + 1)
         input_int = int(input("Type a number."))
         self.program[dest] = input_int
         self.pointer += 2
     
     # opcode 4
-    def output_int(self):
-        value = self.program[self.pointer + 1]
+    def output_int(self, parameter_modes):
+        value = self.get_address(parameter_modes[0], self.pointer + 1)
         print(self.program[value])
         self.pointer += 2
     
     # opcode 99
     def die(self):
         self.running = False
-    
-    def parse_instruction(self):
-        opcode = self.program[self.pointer]
 
+    def get_address(self, mode, value):
+        if mode == 0:
+            result = self.program[value]
+        else:
+            result = value
+        return result
+
+    def parse_opcode(self):
+        instruction = str(self.program[self.pointer])
+        opcode = int(instruction[-2:])
+
+        parameter_modes = [0, 0, 0]
+        if len(instruction) == 3:
+            parameter_modes[0] = int(instruction[0])
+        elif len(instruction) == 4:
+            parameter_modes[0] = int(instruction[1])
+            parameter_modes[1] = int(instruction[0])
+        elif len(instruction) == 5:
+            parameter_modes[0] = int(instruction[2])
+            parameter_modes[1] = int(instruction[1])
+            parameter_modes[2] = int(instruction[0])
+
+        return opcode, parameter_modes
+
+    def parse_instruction(self):
+        (opcode, parameter_modes) = self.parse_opcode()
         # Do something magical with opcodes here
         if opcode == 1:
             # add
-            self.add()
+            self.add(parameter_modes)
         elif opcode == 2:
             # multiply
-            self.mult()
+            self.mult(parameter_modes)
         elif opcode == 3:
-            self.get_and_store_input()
+            self.get_and_store_input(parameter_modes)
         elif opcode == 4:
-            self.output_int()
+            self.output_int(parameter_modes)
         elif opcode == 99:
             self.die()
         else:
@@ -72,6 +95,8 @@ def intcode(input_data: List[str]) -> List:
 
     while computer.running:
         computer.parse_instruction()
+
+    return computer.program
 
 
 if __name__ == "__main__":
