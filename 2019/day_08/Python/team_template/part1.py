@@ -29,8 +29,33 @@ def decode_image_using_numpy(image_data, width, height):
     image_data = image_data.reshape((-1, height, width))
     final_image = image_data[0].copy()
     number_of_layers = image_data.shape[0]
+    # So what's going on here?  At this point, we have a 3D array: (depth,
+    # height, width).  This loop is looping over each depth layer:
     for index in range(number_of_layers):
-        final_image[final_image==2] = image_data[index][final_image==2]
+        final_image[final_image == 2] = image_data[index][final_image == 2]
+        # And this is where the work happens.  Let's break it into pieces:
+        #
+        # Both sides: [final_image==2] - creates a 2D boolean array of
+        # (height, width), with values of True where final_image==2, False
+        # everywhere else.  Note this is regenerated for each layer.  I'm
+        # deliberately avoiding the term "mask" here - a mask has a particular
+        # meaning in numpy.
+        #
+        # LHS: final_image[final_image==2] - this selects only those pixels in
+        # the final_image that still have value of 2 (i.e. those that are
+        # still transparent).
+        #
+        # RHS part 1: image_data[index] - this slices the current 2D layer out
+        # of the 3D image_data.  This 2D layer is the same shape as the final
+        # image (since each layer is the same shape).
+        #
+        # RHS part2: image_data[index][final_image==2] - and this selects the
+        # values in *the layer* where the *final_image* is still transparent,
+        # relying on them both being the same shape.
+        #
+        # Possibly less opaque version:
+        # current_layer = image_data[index]
+        # final_image[final_image == 2] = current_layer[final_image == 2]
     return final_image
 
 
