@@ -1,0 +1,173 @@
+* Day 2
+
+[[https://adventofcode.com/2019/day/2][Instructions]]
+
+** Part 1
+
+Input file is comma separated list of integers.
+
+Each instruction is 4 integers: ~[opcode, address_of_first_operance, address_of_second_operand, address_for_result]~.  Exception:  opcode 99 has no parameters/address.
+
+Opcode 1 => add operands
+Opcode 2 => multiply operands
+Opcode 99=> stop
+
+Skip forward 4 integers after each instruction (exception: ~opcode==99~).
+
+*** Test cases:
+
+ #+BEGIN_QUOTE
+ 1,0,0,0,99 becomes 2,0,0,0,99 (1 + 1 = 2).
+ 2,3,0,3,99 becomes 2,3,0,6,99 (3 * 2 = 6).
+ 2,4,4,5,99,0 becomes 2,4,4,5,99,9801 (99 * 99 = 9801).
+ 1,1,1,4,99,5,6,0,99 becomes 30,1,1,4,2,5,6,0,99.
+ #+END_QUOTE
+
+*** Actual input:
+
+ Before running, replace input[1] with 12, and input[2] with 2 (note: zero-indexed).  Result is at input[0].
+
+** Part 2
+
+Define "verb" as input[1], "noun" as input[2], and find verb/noun values in ~0...99~ that yields 19690720.  Result is 100 * noun + verb.
+
+* Day 5
+
+[[https://adventofcode.com/2019/day/5][Instructions]]
+
+** Part 1
+
+*** New opcodes
+
+Opcode 3 => store integer input at address of operand
+Opcode 4 => output value at address of operand
+
+Note: opcodes 3 & 4 increment instruction pointer by 2
+
+*** Modes
+
+mode 0 (position mode) as above.
+
+mode 1 => immediate mode; value of operand is used
+
+Instruction is modes then opcode.  Leading zeros dropped.  Modes are rtl.  e.g.:
+
+#+BEGIN_EXAMPLE
+ABCDE
+ 1002
+
+DE - two-digit opcode,      02 == opcode 2
+ C - mode of 1st parameter,  0 == position mode
+ B - mode of 2nd parameter,  1 == immediate mode
+ A - mode of 3rd parameter,  0 == position mode,
+                                  omitted due to being a leading zero
+#+END_EXAMPLE
+
+Integers can be negative.
+
+*** Actual input
+
+Use input value of 1.  Run provided input, and get the output value.
+
+** Part 2
+
+*** Opcodes
+
+| Code | Meaing                                                                                                 |
+|------+--------------------------------------------------------------------------------------------------------|
+|    5 | Jump if true: If first operand != 0, set instruction pointer to second operand                         |
+|    6 | Jump if false: If first operand == 0, set instruction pointer to second operand                        |
+|    7 | less than: if first operand < second operand, store 1 in address given in third parameter else store 0 |
+|    8 | equals: if first operand == second operand, store 1 in address given in third parameter else store 0   |
+
+Only auto-increment instruction pointer if instruction doesn't set it.
+
+*** Test cases:
+
+#+BEGIN_QUOTE
+Here are some jump tests that take an input, then output 0 if the input was 
+zero or 1 if the input was non-zero:
+
+3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9 (using position mode)
+3,3,1105,-1,9,1101,0,0,12,4,12,99,1 (using immediate mode)
+Here's a larger example:
+
+3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,
+1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,
+999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99
+The above example program uses an input instruction to ask for a single number. 
+The program will then output 999 if the input value is below 8, output 1000 if 
+the input value is equal to 8, or output 1001 if the input value is greater 
+than 8.
+#+END_QUOTE
+
+*** Actual input
+
+Input value of 5, get output.
+
+* Day 7
+
+** Part 1
+
+5 amplifiers (i.e. intcode computers) in series.
+
+5 phases - one for each amplifier - from 0...4.  No repetition.
+
+2 values provided as inputs: phase, then input value.  For first amplifier,
+input value is 0.  For others, input is output from previous amplifier.
+
+*** Test cases:
+
+#+BEGIN_QUOTE
+Max thruster signal 43210 (from phase setting sequence 4,3,2,1,0):
+
+3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0
+Max thruster signal 54321 (from phase setting sequence 0,1,2,3,4):
+
+3,23,3,24,1002,24,10,24,1002,23,-1,23,
+101,5,23,23,1,24,23,23,4,23,99,0,0
+Max thruster signal 65210 (from phase setting sequence 1,0,4,3,2):
+
+3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,
+1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0
+#+END_QUOTE
+
+*** Actual input
+
+Find max output.
+
+** Part 2
+
+Feedback loop: output of final amplifier goes to input of first amplifier.
+
+Phases 5...9.
+
+Repeat until all amplifiers stop (don't restart any)
+
+*** Actual input
+
+Input value for first amplifier is 0.  Get maximum signal.
+
+* Day 9
+
+** Part 1
+
+Available memory much larger than initial programme.
+
+Support for large numbers.
+
+*** Mode
+
+mode 2 => relative mode.  Operand is at address of parameter + relative base (initial value: 0).
+
+*** opcode
+
+9 => adjust relative base by adding value of only operand.
+
+*** Test cases:
+
+#+BEGIN_QUOTE
+109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99 takes no input and produces a copy of itself as output.
+1102,34915192,34915192,7,4,7,99,0 should output a 16-digit number.
+104,1125899906842624,99 should output the large number in the middle.
+#+END_QUOTE
