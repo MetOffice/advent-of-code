@@ -48,112 +48,112 @@ class Computer:
             The input.
         """
         self.program = program
-        self.running = True
-        self.next_instruction_index = 0
-        self.input_buffer = input_buffer
-        if self.input_buffer is None:
-            self.input_buffer = []
+        self._running = True
+        self._next_instruction_index = 0
+        self._input_buffer = input_buffer
+        if self._input_buffer is None:
+            self._input_buffer = []
         self.last_output = None
-        self.status = "created"
+        self._status = "created"
 
     # Function prototypes for opcodes
 
     # opcode 1
-    def add(self, parameter_modes):
-        value1 = self.program[self.get_address(parameter_modes[0], self.next_instruction_index + 1)]
-        value2 = self.program[self.get_address(parameter_modes[1], self.next_instruction_index + 2)]
-        dest = self.get_address(parameter_modes[2], self.next_instruction_index + 3)
+    def _add(self, parameter_modes):
+        value1 = self.program[self._get_address(parameter_modes[0], self._next_instruction_index + 1)]
+        value2 = self.program[self._get_address(parameter_modes[1], self._next_instruction_index + 2)]
+        dest = self._get_address(parameter_modes[2], self._next_instruction_index + 3)
         self.program[dest] = value1 + value2
-        self.next_instruction_index += 4
+        self._next_instruction_index += 4
 
     # opcode 2
-    def mult(self, parameter_modes):
-        value1 = self.program[self.get_address(parameter_modes[0], self.next_instruction_index + 1)]
-        value2 = self.program[self.get_address(parameter_modes[1], self.next_instruction_index + 2)]
-        dest = self.get_address(parameter_modes[2], self.next_instruction_index + 3)
+    def _mult(self, parameter_modes):
+        value1 = self.program[self._get_address(parameter_modes[0], self._next_instruction_index + 1)]
+        value2 = self.program[self._get_address(parameter_modes[1], self._next_instruction_index + 2)]
+        dest = self._get_address(parameter_modes[2], self._next_instruction_index + 3)
         self.program[dest] = value1 * value2
-        self.next_instruction_index += 4
+        self._next_instruction_index += 4
 
     # opcode 3
-    def get_and_store_input(self, parameter_modes):
+    def _get_and_store_input(self, parameter_modes):
         """
         Get an input. Consume inputs from the input buffer before prompting
         with input().
         """
-        dest = self.get_address(parameter_modes[0], self.next_instruction_index + 1)
-        if len(self.input_buffer) > 0:
-            input_int = self.input_buffer.pop(0)
+        dest = self._get_address(parameter_modes[0], self._next_instruction_index + 1)
+        if len(self._input_buffer) > 0:
+            input_int = self._input_buffer.pop(0)
         else:
-            self.wait()
+            self._wait()
             return
         self.program[dest] = input_int
-        self.next_instruction_index += 2
+        self._next_instruction_index += 2
 
     # opcode 4
-    def output_int(self, parameter_modes):
-        value = self.get_address(parameter_modes[0], self.next_instruction_index + 1)
+    def _output_int(self, parameter_modes):
+        value = self._get_address(parameter_modes[0], self._next_instruction_index + 1)
         #print(self.program[value])
         self.last_output = self.program[value]
-        self.next_instruction_index += 2
+        self._next_instruction_index += 2
 
     # opcode 5
-    def jump_if_true(self, parameter_modes):
-        value1 = self.program[self.get_address(parameter_modes[0], self.next_instruction_index + 1)]
-        value2 = self.program[self.get_address(parameter_modes[1], self.next_instruction_index + 2)]
+    def _jump_if_true(self, parameter_modes):
+        value1 = self.program[self._get_address(parameter_modes[0], self._next_instruction_index + 1)]
+        value2 = self.program[self._get_address(parameter_modes[1], self._next_instruction_index + 2)]
         if value1 != 0:
-            self.next_instruction_index = value2
+            self._next_instruction_index = value2
         else:
-            self.next_instruction_index += 3
+            self._next_instruction_index += 3
 
     # opcode 6
-    def jump_if_false(self, parameter_modes):
-        value1 = self.program[self.get_address(parameter_modes[0], self.next_instruction_index + 1)]
-        value2 = self.program[self.get_address(parameter_modes[1], self.next_instruction_index + 2)]
+    def _jump_if_false(self, parameter_modes):
+        value1 = self.program[self._get_address(parameter_modes[0], self._next_instruction_index + 1)]
+        value2 = self.program[self._get_address(parameter_modes[1], self._next_instruction_index + 2)]
         if value1 == 0:
-            self.next_instruction_index = value2
+            self._next_instruction_index = value2
         else:
-            self.next_instruction_index += 3
+            self._next_instruction_index += 3
 
     # opcode 7
-    def less_than(self, parameter_modes):
-        value1 = self.program[self.get_address(parameter_modes[0], self.next_instruction_index + 1)]
-        value2 = self.program[self.get_address(parameter_modes[1], self.next_instruction_index + 2)]
-        dest = self.get_address(parameter_modes[2], self.next_instruction_index + 3)
+    def _less_than(self, parameter_modes):
+        value1 = self.program[self._get_address(parameter_modes[0], self._next_instruction_index + 1)]
+        value2 = self.program[self._get_address(parameter_modes[1], self._next_instruction_index + 2)]
+        dest = self._get_address(parameter_modes[2], self._next_instruction_index + 3)
         if value1 < value2:
             self.program[dest] = 1
         else:
             self.program[dest] = 0
-        self.next_instruction_index += 4
+        self._next_instruction_index += 4
 
     # opcode 8
-    def equals(self, parameter_modes):
-        value1 = self.program[self.get_address(parameter_modes[0], self.next_instruction_index + 1)]
-        value2 = self.program[self.get_address(parameter_modes[1], self.next_instruction_index + 2)]
-        dest = self.get_address(parameter_modes[2], self.next_instruction_index + 3)
+    def _equals(self, parameter_modes):
+        value1 = self.program[self._get_address(parameter_modes[0], self._next_instruction_index + 1)]
+        value2 = self.program[self._get_address(parameter_modes[1], self._next_instruction_index + 2)]
+        dest = self._get_address(parameter_modes[2], self._next_instruction_index + 3)
         if value1 == value2:
             self.program[dest] = 1
         else:
             self.program[dest] = 0
-        self.next_instruction_index += 4
+        self._next_instruction_index += 4
 
     # opcode 99
-    def die(self):
-        self.running = False
-        self.status = "completed"
+    def _die(self):
+        self._running = False
+        self._status = "completed"
 
-    def wait(self):
-        self.running = False
-        self.status = "waiting"
+    def _wait(self):
+        self._running = False
+        self._status = "waiting"
 
-    def get_address(self, mode, value):
+    def _get_address(self, mode, value):
         if mode == 0:
             result = self.program[value]
         else:
             result = value
         return result
 
-    def parse_opcode(self):
-        instruction = str(self.program[self.next_instruction_index])
+    def _parse_opcode(self):
+        instruction = str(self.program[self._next_instruction_index])
         opcode = int(instruction[-2:])
 
         parameter_modes = [0, 0, 0]
@@ -169,51 +169,51 @@ class Computer:
 
         return opcode, parameter_modes
 
-    def parse_instruction(self):
-        (opcode, parameter_modes) = self.parse_opcode()
+    def _parse_instruction(self):
+        (opcode, parameter_modes) = self._parse_opcode()
         # Do something magical with opcodes here
         if opcode == 1:
             # add
-            self.add(parameter_modes)
+            self._add(parameter_modes)
         elif opcode == 2:
             # multiply
-            self.mult(parameter_modes)
+            self._mult(parameter_modes)
         elif opcode == 3:
-            self.get_and_store_input(parameter_modes)
+            self._get_and_store_input(parameter_modes)
         elif opcode == 4:
-            self.output_int(parameter_modes)
+            self._output_int(parameter_modes)
         elif opcode == 5:
-            self.jump_if_true(parameter_modes)
+            self._jump_if_true(parameter_modes)
         elif opcode == 6:
-            self.jump_if_false(parameter_modes)
+            self._jump_if_false(parameter_modes)
         elif opcode == 7:
-            self.less_than(parameter_modes)
+            self._less_than(parameter_modes)
         elif opcode == 8:
-            self.equals(parameter_modes)
+            self._equals(parameter_modes)
         elif opcode == 99:
-            self.die()
+            self._die()
         else:
             raise Exception(
                 "Unrecognised opcode: "
                 + str(opcode)
                 + " at position "
-                + str(self.next_instruction_index)
+                + str(self._next_instruction_index)
             )
 
-        return self.running
+        return self._running
 
     def run(self):
-        if self.status == "completed":
+        if self._status == "completed":
             raise Exception("Computer has already completed - can't run again")
         else:
-            self.running = True
-            self.status = "running"
+            self._running = True
+            self._status = "running"
 
-        while self.running:
-            self.parse_instruction()
+        while self._running:
+            self._parse_instruction()
 
-    def add_input(self, _input):
-        self.input_buffer.append(_input)
+    def _add_input(self, _input):
+        self._input_buffer.append(_input)
 
 
 def run_feedback_loop(program: List[int], phases: List[int]) -> int:
