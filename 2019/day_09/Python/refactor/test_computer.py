@@ -14,28 +14,28 @@ from computer import Computer
 
 @pytest.mark.parametrize(
     'test_program, expected', [
-        # Day 2 opcode 1 case 1 (one instruction):
+        # 0: Day 2 opcode 1 case 1 (one instruction):
         #
         # 1a. add value (1) at index given by value of index 1 (0)
         # 1b. with value (1) at index given by value of index 2 (0)
         # 1c. and put the result (1 + 1 = 2) at index given by value of index 3
         #     (0)
         ([1, 0, 0, 0, 99], [2, 0, 0, 0, 99]),
-        # Day 2 opcode 2 case 1 (one instruction):
+        # 1: Day 2 opcode 2 case 1 (one instruction):
         #
         # 1a. multiply value (3) at index given by value of index 1 (3)
         # 1b. with value (2) at index given by value of index 2 (0)
         # 1c. and put the result (3 * 2 = 6) at index given by value of index 3
         #     (3)
         ([2, 3, 0, 3, 99], [2, 3, 0, 6, 99]),
-        # Day 2 opcode 2 case 2 (one instruction):
+        # 2: Day 2 opcode 2 case 2 (one instruction):
         #
         # 1a. multiply value (99) at index given by value of index 1 (4)
         # 1b. with value (99) at index given by value of index 2 (4)
         # 1c. and put the result (99 * 99 = 9801) at the index given by value
         #     of index 3 (5)
         ([2, 4, 4, 5, 99, 0], [2, 4, 4, 5, 99, 9801]),
-        # Day 2 opcode 1 & 2 case 2 (two instructions):
+        # 3: Day 2 opcode 1, 2 case 2 (two instructions):
         #
         # 1a. add value (1) at index given by value of index 1 (1)
         # 1b. with value (1) at index given by value of index 2 (1)
@@ -46,7 +46,7 @@ from computer import Computer
         # 2c. and put the result (5 * 6 = 30) at index given by value of index
         #     7 (0)
         ([1, 1, 1, 4, 99, 5, 6, 0, 99], [30, 1, 1, 4, 2, 5, 6, 0, 99]),
-        # Day 5 opcode 2 position(C=0)-immediate(B=1)-position(A=0) case 1
+        # 4: Day 5 opcode 2 position(C=0)-immediate(B=1)-position(A=0) case 1
         # (one instruction):
         #
         # 1a. multiple value (33) at index given by value of index 1 (4)
@@ -54,7 +54,7 @@ from computer import Computer
         # 1c. and put the result (33 * 3 = 99) at index given by value of index
         #     3 (4)
         ([1002, 4, 3, 4, 33],  [1002, 4, 3, 4, 99]),
-        # Day 5 opcode 1 immediate(C=1)-immediate(B=1)-position(A=0) case 1
+        # 5: Day 5 opcode 1 immediate(C=1)-immediate(B=1)-position(A=0) case 1
         # (one instruction):
         #
         # 1a. add value of index 1 (100)
@@ -72,13 +72,86 @@ def test_computer(test_program, expected):
 
 @pytest.mark.parametrize(
     'test_program, test_input, expected', [
-        # Day 5 opcode 3 & 4 case 1 (two instructions):
+        # 0: Day 5 opcode 3, 4 case 1 (two instructions):
         #
         # 1a. put input (1) at index given by value of index 1 (0)
         # 2a. output value (1) at index given by value of index 3 (0)
-        # TODO: where is the "output" stored? Should be asserting output, not
-        # program.
-        ([3, 0, 4, 0, 99], [1], [1, 0, 4, 0, 99])
+        # TODO: where is the "output" stored? Should so also be asserting
+        # output.
+        # TODO: Should input be a list if it is a single digit? The test
+        # errored if input was a string or int.
+        ([3, 0, 4, 0, 99], [1], [1, 0, 4, 0, 99]),
+        # 1: Day 5 opcode 3, 8, 4 input > 8 case 1 (three instructions):
+        #
+        # 1a. put input (9) at index given by value of index 1 (9)
+        # 2a. since value of index 3 (9) != value of index 4 (10)
+        # 2b. put 0 at index given by value of index 5 (9)
+        # 3a. output value (0) at index given by value of index 7 (9)
+        ([3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8], [9],
+         [3, 9, 8, 9, 10, 9, 4, 9, 99, 0, 8]),
+        # 2
+        ([3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8], [9],
+         [3, 9, 7, 9, 10, 9, 4, 9, 99, 0, 8]),
+        # 3
+        ([3, 3, 1108, -1, 8, 3, 4, 3, 99], [9],
+         [3, 3, 1108, 0, 8, 3, 4, 3, 99]),
+        # 4
+        ([3, 3, 1107, -1, 8, 3, 4, 3, 99], [9],
+         [3, 3, 1107, 0, 8, 3, 4, 3, 99]),
+        # 5: Day 5 opcode 3, ... input = 8
+        ([3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8], [8],
+         [3, 9, 8, 9, 10, 9, 4, 9, 99, 1, 8]),
+        # 6
+        ([3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8], [8],
+         [3, 9, 7, 9, 10, 9, 4, 9, 99, 0, 8]),
+        # 7
+        ([3, 3, 1108, -1, 8, 3, 4, 3, 99], [8],
+         [3, 3, 1108, 1, 8, 3, 4, 3, 99]),
+        # 8
+        ([3, 3, 1107, -1, 8, 3, 4, 3, 99], [8],
+         [3, 3, 1107, 0, 8, 3, 4, 3, 99]),
+        # 9: Day 5 opcode 3, ... input < 8
+        ([3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8], [7],
+         [3, 9, 8, 9, 10, 9, 4, 9, 99, 0, 8]),
+        # 10
+        ([3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8], [7],
+         [3, 9, 7, 9, 10, 9, 4, 9, 99, 1, 8]),
+        # 11
+        ([3, 3, 1108, -1, 8, 3, 4, 3, 99], [7],
+         [3, 3, 1108, 0, 8, 3, 4, 3, 99]),
+        # 12
+        ([3, 3, 1107, -1, 8, 3, 4, 3, 99], [7],
+         [3, 3, 1107, 1, 8, 3, 4, 3, 99]),
+        # 13: Day 5 opcode 3, ... input = 0 output = 0
+        ([3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9], [0],
+         [3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, 0, 0, 1, 9]),
+        # 14: Day 5 opcode 3, ... input = 99 output = 1
+        ([3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9], [99],
+         [3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, 99, 1, 1, 9]),
+        # 15: Day 5 opcode 3, ... input < 8 output = 999
+        ([3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31,
+          1106, 0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104,
+          999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99],
+         [7],
+         [3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31,
+          1106, 0, 36, 98, 0, 7, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104,
+          999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99]),
+        # 16: Day 5 opcode 3, ... input = 8 output = 1000
+        ([3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31,
+          1106, 0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104,
+          999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99],
+         [8],
+         [3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31,
+          1106, 0, 36, 98, 1000, 8, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104,
+          999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99]),
+        # 17: Day 5 opcode 3, ... input > 8 output = 1001
+        ([3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31,
+          1106, 0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104,
+          999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99],
+         [9],
+         [3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31,
+          1106, 0, 36, 98, 1001, 9, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104,
+          999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99]),
     ]
 )
 def test_computer_with_input(test_program, test_input, expected):
