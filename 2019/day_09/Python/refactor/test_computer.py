@@ -1,15 +1,34 @@
 """
-Test part 1.
-To run, first, pip or conda install pytest
-Then, from the team directory, run `python -m pytest .`
-or, if using Cloud9 on AWS, run `python3 -m pytest .`
+Test ``computer.py``.
+To run (from this directory):
+  % module load scitools  # or pip or conda install pytest
+  % python -m pytest .
+Or, if using Cloud9 on AWS:
+  % python3 -m pytest .
 """
 import pytest
-from typing import List
-from unittest import mock
 
 from load_input import get_input
-import part1
+from computer import Computer
+
+
+@pytest.mark.parametrize(
+    'test_input, expected', [
+        # opcode 1 case 1
+        ([1, 0, 0, 0, 99], [2, 0, 0, 0, 99]),
+        # opcode 2 case 1
+        ([2, 3, 0, 3, 99], [2, 3, 0, 6, 99]),
+        # opcode 2 case 2
+        ([2, 4, 4, 5, 99, 0], [2, 4, 4, 5, 99, 9801]),
+        # opcode 1 case 2
+        ([1, 1, 1, 4, 99, 5, 6, 0, 99], [30, 1, 1, 4, 2, 5, 6, 0, 99]),
+    ]
+)
+def test_day_2(test_input, expected):
+    comp = Computer(test_input)
+    comp.run()
+    output = comp.program
+    assert output == expected
 
 
 def test_get_input_type():
