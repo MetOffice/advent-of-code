@@ -76,10 +76,6 @@ def test_computer(test_program, expected):
         #
         # 1a. put input (1) at index given by value of index 1 (0)
         # 2a. output value (1) at index given by value of index 3 (0)
-        # TODO: where is the "output" stored? Should so also be asserting
-        # output.
-        # TODO: Should input be a list if it is a single digit? The test
-        # errored if input was a string or int.
         ([3, 0, 4, 0, 99], [1], [1, 0, 4, 0, 99], 1),
         # 1: Day 5 opcode 3, 8, 4 input > 8 case 1 (three instructions):
         #
