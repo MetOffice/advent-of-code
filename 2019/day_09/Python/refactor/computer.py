@@ -217,6 +217,32 @@ class Computer:
 
 
 def run_feedback_loop(program: List[int], phases: List[int]) -> int:
+    """
+    Returns output from last amplifier after all amplifiers have run.
+
+    TODO: Evaluate if this belongs in day 7 only, or should be part of the
+    common computer code.
+
+    This is the infrastructure for part 2 of day 7.  There's multiple
+    amplifiers in sequence, where each amplifier is an instance of the intcode
+    computer.  All amplifiers run the same program.  One amplifier is
+    generated for each provided phase (5 phases for the day 7 puzzle).  The
+    phase is the first input for each amplifier.  At the start, an input value
+    of zero is provided as the second input for the first amplifier.
+    Subsequently, The output for amplifier N is plumbed to the input for
+    amplifier N+1.  For the final amplifier in the chain, the output is
+    plumbed to the input of the first amplifier.
+
+    An amplifier continues running until it either reaches the stop opcode
+    (99), or it requests input that has not yet been provided by the output
+    from the preceding amplifier.  Once an amplifier executes the stop opcode,
+    it does not resume execution.  An amplifier waiting for input will resume
+    when the input is provided.
+
+    Returns the final output for the final amplifier when all amplfiers have
+    stopped.
+
+    """
     amplifiers = []
     for phase in phases:
         input_buffer = [phase]
@@ -241,6 +267,18 @@ def run_feedback_loop(program: List[int], phases: List[int]) -> int:
 
 
 def find_settings(program: List[int]) -> Tuple[List[int], int]:
+    """
+    Return combination of phases to maximise the output of the chain of
+    amplifiers.
+
+    TODO: Evaluate if this belongs in day 7 only, or should be part of the
+    common computer code.
+
+    Finds which sequence of phases (5, 6, 7, 8, 9), results in the largest
+    signal from the amplifier chain.  See run_feedback_loop for details of the
+    amplifiers, and how the phase is interpreted.
+
+    """
     max_value = 0
     max_setting = None
     for setting in permutations(range(5, 10)):
