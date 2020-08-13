@@ -1,85 +1,89 @@
 from load_input import get_input
 
 
-def main():
-    # temporary input (make parsing function later)
-    moons = [Moon({'x': 6, 'y': -2, 'z': -7}),
-             Moon({'x': -6, 'y': -7, 'z': -4}),
-             Moon({'x': -9, 'y': 11, 'z': 0}),
-             Moon({'x': -3, 'y': -4, 'z': 6})]
-
-    number_of_timesteps = 1000
-    for _ in range(number_of_timesteps):
-        for moon in moons:
-            # we can use all moons here, as the effect of a moon's
-            # gravity on itself is happily zero
-            moon.apply_gravity(moons)
-
-        for moon in moons:
-            moon.apply_velocity()
-
-    return calculate_energy(moons)
-
-
-class Moon:
-    def __init__(self, position):
-        """
-        Input parameters:
-          position: dict of the form {'x': int, 'y': int, 'z': int}
-        """
-        self.position = position
-        self.velocity = {'x': 0, 'y': 0, 'z': 0}
-
-    def apply_velocity(self):
-        """
-        Updates the position of this moon using its velocity
-        """
-
-        for axis in self.position:
-            self.position[axis] += self.velocity[axis]
-
-    def apply_gravity(self, moons):
-        """
-        Updates the velocity of this moon based on the position
-        of other moons in moons.
-        Input parameters:
-          moons: list of Moon objects
-        """
-        for moon in moons:
-            for axis in self.position:
-                if self.position[axis] > moon.position[axis]:
-                    self.velocity[axis] -= 1
-                elif self.position[axis] < moon.position[axis]:
-                    self.velocity[axis] += 1
-
-def calculate_energy(moons):
-    """
-    Calculate the energy of a given configuration of moons.
-    Input parameters:
-      moons: list of Moon objects
+def parse_recipe(recipe_string):
     """
 
-    total_energy = 0
-    for moon in moons:
-        kinetic_energy = 0
-        potential_energy = 0
-        for axis in moon.position:
-            kinetic_energy += abs(moon.velocity[axis])
-            potential_energy += abs(moon.position[axis])
-
-        energy = kinetic_energy * potential_energy
-        total_energy += energy
-
-    return total_energy
-
-
-def parse_or_something(input_list):
     """
-    Function to get input from the file and make it a dict...
-    ...but we didn't get round to it
+    parsed_recipe = {}
+    for component in recipe_string.split(', '):
+        quantity, chemical = component.split()
+        parsed_recipe[chemical] = int(quantity)
+    return parsed_recipe
+
+
+def parse_input(reactions):
+    """
+
+    """
+    parsed_input = {}
+    for line in reactions:
+        recipe, result = line.split(' => ')
+        quantity, chemical = result.split()
+        parsed_input[chemical] = {
+            'quantity': int(quantity),
+            'recipe': parse_recipe(recipe)
+        }
+    return parsed_input
+
+
+def walk_into():
+    """
+
     """
     pass
 
+
+def calculate_total_ore(reactions):
+    """
+
+    """
+    fuel_details = reactions['FUEL']
+    ore = calculate_ore(fuel_details, reactions)
+    total_ore = 0
+    for base_chemical, base_quantity in ore.items():
+        total_ore += base_quantity
+    return total_ore
+
+
+def calculate_ore(chemical_details, reactions):
+    ore = {}
+    for chemical, quantity in chemical_details['recipe'].items():
+        nested_recipe = reactions[chemical]['recipe']
+        if 'ORE' in nested_recipe:
+            if chemical not in ore:
+                ore[chemical] = 0
+            ore[chemical] += quantity
+        else:
+            calculate_ore(nested_recipe, reactions)
+
+    return ore
+
+
+def pseudo_code():
+    """
+    1 fuel = 7A + 1E
+    1 fuel = 7A + (7A + 1D)
+           = 14A + 1D
+           = 14A + (7A + 1C)
+           = 21A + 1C
+           = 21A + (7A + 1B)
+           = 28A +1B
+           = 28A + (1 ORE)
+           =
+
+    Note: dict where is just chemical, values are recipe and quantity
+    """
+    pass
+
+
+
+def main():
+    # temporary input (make parsing function later)
+    raw_input = get_input()
+    reactions = parse_input(raw_input)
+    ore = calculate_total_ore(reactions['FUEL'])
+    print(f'{ore} ore required')
 
 
 if __name__ == "__main__":

@@ -1,45 +1,34 @@
-from part1 import Moon, calculate_energy
-
-def test_apply_velocity():
-    moon1 = Moon({'x': -1, 'y': 0, 'z': 2})
-    moon2 = Moon({'x': 2, 'y': -10, 'z': -7})
-    moon3 = Moon({'x': 4, 'y': -8, 'z': 8})
-    moon4 = Moon({'x': 3, 'y': 5, 'z': -1})
-
-    moon1.apply_gravity([moon2, moon3, moon4])
-    moon1.apply_velocity()
-    assert moon1.position == {'x': 2, 'y': -1, 'z': 1}
+from part1 import parse_input, calculate_total_ore
 
 
-def test_apply_gravity():
-    moon1 = Moon({'x': -1, 'y': 0, 'z': 2})
-    moon2 = Moon({'x': 2, 'y': -10, 'z': -7})
-    moon3 = Moon({'x': 4, 'y': -8, 'z': 8})
-    moon4 = Moon({'x': 3, 'y': 5, 'z': -1})
-
-    moon1.apply_gravity([moon2, moon3, moon4])
-    moon2.apply_gravity([moon1, moon3, moon4])
-    moon3.apply_gravity([moon1, moon2, moon4])
-    moon4.apply_gravity([moon1, moon2, moon3])
-    assert moon1.velocity == {'x': 3, 'y': -1, 'z': -1}
-    assert moon2.velocity == {'x': 1, 'y': 3, 'z': 3}
-    assert moon3.velocity == {'x': -3, 'y': 1, 'z': -3}
-    assert moon4.velocity == {'x': -1, 'y': -3, 'z': 1}
+def make_reactions():
+    reactions = {
+        'A': {'quantity': 10, 'recipe': {'ORE': 10}},
+        'B': {'quantity': 1, 'recipe': {'ORE': 1}},
+        'C': {'quantity': 1, 'recipe': {'A': 7, 'B': 1}},
+        'D': {'quantity': 1, 'recipe': {'A': 7, 'C': 1}},
+        'E': {'quantity': 1, 'recipe': {'A': 7, 'D': 1}},
+        'FUEL': {'quantity': 1, 'recipe': {'A': 7, 'E': 1}}
+    }
+    return reactions
 
 
-def test_calculate_energy():
-    moon1 = Moon({'x': 2, 'y': 1, 'z': -3})
-    moon2 = Moon({'x': 1, 'y': -8, 'z': 0})
-    moon3 = Moon({'x': 3, 'y': -6, 'z': 1})
-    moon4 = Moon({'x': 2, 'y': 0, 'z': 4})
+def test_parse_input():
+    reactions = [
+        '10 ORE => 10 A',
+        '1 ORE => 1 B',
+        '7 A, 1 B => 1 C',
+        '7 A, 1 C => 1 D',
+        '7 A, 1 D => 1 E',
+        '7 A, 1 E => 1 FUEL',
+    ]
+    output = parse_input(reactions)
+    expected = make_reactions()
+    assert output == expected
 
-    moons = [moon1, moon2, moon3, moon4]
 
-    moon1.velocity = {'x': -3, 'y': -2, 'z' : 1}
-    moon2.velocity = {'x': -1, 'y': 1, 'z': 3}
-    moon3.velocity = {'x': 3, 'y': 2, 'z': -3}
-    moon4.velocity = {'x': 1, 'y': -1, 'z': -1}
-
-    assert calculate_energy(moons) == 179
-
-    
+def test_calculate_total_ore():
+    reactions = make_reactions()
+    output = calculate_total_ore(reactions)
+    expected = 31
+    assert output == expected
