@@ -1,4 +1,8 @@
 from load_input import get_input
+import math
+import pprint
+
+pp = pprint.PrettyPrinter()
 
 
 def parse_recipe(recipe_string):
@@ -36,27 +40,41 @@ def walk_into():
 
 def calculate_total_ore(reactions):
     """
-
+    At the moment we are throwing away the quantity produced information
+    Idea is to make a copy of reactions. Divide value provided by quantity key
+    through the quantities in the value of the recipe key
     """
+    pp.pprint(reactions)
+    ore = {}
     fuel_details = reactions['FUEL']
-    ore = calculate_ore(fuel_details, reactions)
+    ore = calculate_ore(fuel_details, reactions, ore)
     total_ore = 0
     for base_chemical, base_quantity in ore.items():
-        total_ore += base_quantity
+        print("Base Chemical:", base_chemical, "Base Quantity", base_quantity)
+        minimum_quantity = reactions[base_chemical]["quantity"]
+        minimum_ore = reactions[base_chemical]["recipe"]["ORE"]
+
+        # if base_quantity % minimum_ore != 0:
+        #     base_quantity += minimum_quantity
+
+        total_ore += minimum_ore * (math.ceil(base_quantity / minimum_quantity))
+        print("Total Ore:", total_ore)
     return total_ore
 
 
-def calculate_ore(chemical_details, reactions):
-    ore = {}
+def calculate_ore(chemical_details, reactions, ore):
+
+    produces_quantity = chemical_details["quantity"]
     for chemical, quantity in chemical_details['recipe'].items():
+        print("Chemical:", chemical, "Quantity:", quantity)
         nested_recipe = reactions[chemical]['recipe']
         if 'ORE' in nested_recipe:
             if chemical not in ore:
                 ore[chemical] = 0
-            ore[chemical] += quantity
+            ore[chemical] += quantity # * produces_quantity
+            print("ORE:", ore)
         else:
-            calculate_ore(nested_recipe, reactions)
-
+            calculate_ore(reactions[chemical], reactions, ore)
     return ore
 
 
@@ -77,12 +95,11 @@ def pseudo_code():
     pass
 
 
-
 def main():
     # temporary input (make parsing function later)
     raw_input = get_input()
     reactions = parse_input(raw_input)
-    ore = calculate_total_ore(reactions['FUEL'])
+    ore = calculate_total_ore(reactions)
     print(f'{ore} ore required')
 
 
