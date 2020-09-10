@@ -33,9 +33,12 @@ def perturb_pattern(pattern, repetition):
 
 def main():
     phase_input = get_input()
+    message_location = int(''.join(str(digit) for digit in phase_input[:7]))
+    phase_input = phase_input * 10000
     for phase in range(100):
         phase_input = calculate_phase(phase_input)
-    return phase_input[:8]
+        print(phase)
+    return phase_input[message_location:message_location + 8]
 
 if __name__ == "__main__":
     print(main())
