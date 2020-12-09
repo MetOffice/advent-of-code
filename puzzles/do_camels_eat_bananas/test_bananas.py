@@ -6,7 +6,7 @@ from bananas import BananaStore
 @pytest.fixture()
 def setup():
     bananas = 20
-    test_bananastore = BananaStore(bananas)
+    test_bananastore = BananaStore(bananas, 1000000)
     return test_bananastore, bananas
 
 

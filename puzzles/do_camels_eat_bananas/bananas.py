@@ -4,18 +4,20 @@ class World:
 
     def __init__(self, length, initial_bananas, step):
         self.length = length
-        self.bananastores = {0: BananaStore(initial_bananas)}
+        self.bananastores = {0: BananaStore(initial_bananas, initial_bananas)}
         self.step = step
+        self.initial_bananas = initial_bananas
 
     def get_final_bananas(self, camel_carrying_capacity):
         my_camel = Camel(camel_carrying_capacity)
+        if my_camel.location in self.bananastores:
+            free_space = my_camel.banana_store.remaining_capacity
+            pick_up = max(free_space,)
         # Camel needs to pick up bananas
         # Camel needs to move a specific distance
         # Camel needs to drop bananas, but keep enough to get back
         # Camel goes back to get move bananas
-        for distance in range(self.length):
-
-            return "Hello!"
+        return "Hello!"
 
 
 class Camel:
@@ -34,7 +36,7 @@ class Camel:
 
 class BananaStore:
 
-    def __init__(self, bananas, max_bananas=None):
+    def __init__(self, bananas, max_bananas):
         self.bananas = bananas
         self.max_bananas = max_bananas
 
@@ -43,8 +45,8 @@ class BananaStore:
             self.bananas += number
         else:
             raise ValueError("You cannot add negative bananas")
-        if self.max_bananas and self.max_bananas < self.bananas:
-            raise ValueError("Too many bananas on that poor camel!")
+        if self.max_bananas < self.bananas:
+            raise ValueError("Too many bananas")
 
     def remove(self, number):
         if self.bananas >= number >= 0:
@@ -55,6 +57,10 @@ class BananaStore:
             else:
                 raise ValueError(f"You only have {self.bananas} bananas, tried "
                                  f"to remove {number} bananas")
+
+    @property
+    def remaining_capacity(self):
+        return self.max_bananas - self.bananas
 
 
 if __name__ == "__main__":
