@@ -36,7 +36,7 @@ def main():
 
     print(part1_answer)
 
-    num1, num2, num3  = find_target(transactions, target=2020)
+    num1, num2, num3 = find_target(transactions, target=2020)
 
     part2_answer = num1 * num2 * num3
 
