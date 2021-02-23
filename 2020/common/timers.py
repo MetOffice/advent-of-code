@@ -28,7 +28,7 @@ def print_duration(func):
         )
         return result
 
-    func(0)
+    # func(0)
     datetime.now()
     return _print_duration
 
