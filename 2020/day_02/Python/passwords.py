@@ -1,11 +1,56 @@
 import common
+import re
+from typing import List, Tuple
 
-def parse_input(contents):
+
+def parse_input(contents: List[str]) -> Tuple[int, int, str, str]:
+    """
+    Yield input extracted from the contents.
+
+    This function uses regular expressions, useful references:
+
+    * https://regex101.com/
+    * https://alf.nu/RegexGolf
+    * https://docs.python.org/3/library/re.html
+
+    Parameters
+    ----------
+    contents:  List[str]
+        A list of strings of the format int-int char: password
+
+    Yields
+    ------
+    : Tuple (int, int, char, password)
+        input extracted from contents
+    """
+
+    # Example: 1-3 a: abcde
+    pattern = r"""
+    ^                      # start of line
+    (?P<min_count>\d+)     # one or more digits, 1 from Example
+    -                      # literal -
+    (?P<max_count>\d+)     # one or more digits, 3 from Example
+    \s*                    # 0 or more whitespace characters
+    (?P<character>\w)      # One character, a from Example
+    :                      # literal :
+    \s*                    # 0 or more whitespace characters
+    (?P<password>\w+)      # One or more characters, abcde from Example
+    $                      # End of line
+    """
+
     for line in contents:
-        count, character, password = line.split()
-        min_count, max_count = count.split('-')
-        character = character.strip(':')
-        yield int(min_count), int(max_count), character, password
+        # re.search will search through the entire string for the pattern.
+        # re.match will match from the start of the string
+        # re.VERBOSE: https://docs.python.org/3/howto/regex.html#using-re-verbose
+        # Using match groups: https://docs.python.org/3/library/re.html#re.Match.group
+        matched = re.search(pattern, line, re.VERBOSE)
+        if matched:
+            min_count = int(matched.group('min_count'))
+            max_count = int(matched.group('max_count'))
+            character = matched.group('character')
+            password = matched.group('password')
+            yield min_count, max_count, character, password
+
 
 def validate_password_part_1(min_count, max_count, character, password):
     """
