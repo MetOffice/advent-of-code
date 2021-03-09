@@ -58,3 +58,4 @@ if __name__ == "__main__":
     result_part_1, result_part_2 = main()
     print(f'Number of valid passwords for part 1 = {result_part_1}')
     print(f'Number of valid passwords for part 2 = {result_part_2}')
+
