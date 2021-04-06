@@ -12,15 +12,16 @@ def parse_input(contents: List[str]) -> Tuple[int, int, str, str]:
     * https://regex101.com/
     * https://alf.nu/RegexGolf
     * https://docs.python.org/3/library/re.html
+    * :mod:`re`
 
     Parameters
     ----------
-    contents:  List[str]
+    contents : list[str]
         A list of strings of the format int-int char: password
 
     Yields
     ------
-    : Tuple (int, int, char, password)
+    tuple(int, int, char, password)
         input extracted from contents
     """
 
@@ -58,7 +59,7 @@ def validate_password_part_1(min_count, max_count, character, password):
 
     Returns
     -------
-    : bool
+    bool
         Whether the password is valid
     """
     return min_count <= password.count(character) <= max_count

@@ -6,8 +6,8 @@ def load_string():
     """
     Returns each line from the input file
 
-    Returns:
-    --------
+    Returns
+    -------
     : list of strings
         Each line from the index file
     """
