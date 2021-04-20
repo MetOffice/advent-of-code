@@ -3,6 +3,15 @@ from common.loaders import load_string
 class Passport:
     def __init__(self, byr=None, iyr=None, eyr=None, hgt=None,
                  hcl=None, ecl=None, pid=None, cid=None):
+        ''' byr (Birth Year)
+            iyr (Issue Year)
+            eyr (Expiration Year)
+            hgt (Height)
+            hcl (Hair Color)
+            ecl (Eye Color)
+            pid (Passport ID)
+            cid (Country ID)
+        '''
         self.byr = byr
         self.iyr = iyr
         self.eyr = eyr
