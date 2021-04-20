@@ -140,3 +140,6 @@ dmypy.json
 
 # emacs stuff
 *~
+
+# vim stuff
+*.swp
