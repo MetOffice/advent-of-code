@@ -46,6 +46,8 @@ class Passport:
             print(f"Missing fields {missing_fields}")
         return result
 
+    # TODO: Write tests for the following validate functions to get the
+    # correct answer for part 2 :)
     def _validate_value(self, field, value):
         attribute = f"_validate_{field}_value"
         method = getattr(self, attribute, None)
