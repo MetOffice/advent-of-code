@@ -1,6 +1,7 @@
 from passports import (
     parse_passport, Passport, get_passports, count_valid_passports
 )
+import pytest
 
 # NO NEW LINE AT THE END OF THE INPUT!
 INPUT_DATA = """ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
@@ -132,3 +133,33 @@ def test_count_valid_passports_no_ignorable_fields():
     actual = count_valid_passports(passports, ignorable_fields)
     expected = 1
     assert actual == expected
+
+
+@pytest.mark.parametrize("input, expected", [("#123abc", True),
+                                             ("#123abz", False),
+                                             ("123abc", False)])
+def test__validate_hcl_value(input, expected):
+    passport = Passport()
+
+    result = passport._validate_hcl_value(input)
+    assert expected == result
+
+
+@pytest.mark.parametrize("input, expected",
+                             [("60in", True),
+                              ("190cm", True),
+                              ("190in", False),
+                              ("190", False)])
+def test__validate_hgt_value(input, expected):
+    passport = Passport()
+    result = passport._validate_hgt_value(input)
+    assert expected == result
+
+
+@pytest.mark.parametrize("input, expected", [("000000001", True),
+                                             ("0123456789", False),
+                                             ("19238459j", False)])
+def test__validate_pid_value(input, expected):
+    passport = Passport()
+    result = passport._validate_pid_value(input)
+    assert expected == result

@@ -27,9 +27,23 @@ class Passport:
 
 
     def validate(self, ignorable_fields, validate_values=False):
-        '''Validate the entries in the passport :
-                1. that all required fields are present.
-                2. That no /extra/ fields have crept '''
+        """
+        Validate the passport
+        Parameters
+        ----------
+        ignorable_fields: List(str)
+            A list of three letter codes which are the fields we can ignore,
+             and have no bearing on validation
+        validate_values: Bool
+            Only validate the value if there is a value to validate.
+            If false we just validate the presence of the fields, not their contents.
+
+        Returns
+        -------
+        Bool
+            True if the passport is valid
+        """
+
         result = True
         missing_fields = []
         for field in self.required_fields:
@@ -38,6 +52,7 @@ class Passport:
                 if field not in ignorable_fields:
                     missing_fields.append(field)
                     result = False
+                    break
             else:
                 if validate_values:
                     result = self._validate_value(field, value)
@@ -58,22 +73,22 @@ class Passport:
 
     def _validate_byr_value(self, value):
         four_digits = len(value) != 4
-        valid_range = int(value) >= 1920 and int(value) <= 2002
+        valid_range = 1920 <= int(value) <= 2002
         return four_digits and valid_range
 
     def _validate_iyr_value(self, value):
         four_digits = len(value) != 4
-        valid_range = int(value) >= 2010 and int(value) <= 2020
+        valid_range = 2010 <= int(value) <= 2020
         return four_digits and valid_range
 
     def _validate_eyr_value(self, value):
         four_digits = len(value) != 4
-        valid_range = int(value) >= 2020 and int(value) <= 2030
+        valid_range = 2020 <= int(value) <= 2030
         return four_digits and valid_range
 
     def _validate_hgt_value(self, value):
         valid_units = True
-        units = value[-2]
+        units = value[-2:]
         if units == "cm":
             lower_value = 150
             upper_value = 193
@@ -85,11 +100,11 @@ class Passport:
         valid_range = True
         if valid_units:
             valid_range = (
-                value[:-2] >= lower_value and value[:-2] <= upper_value)
+                    lower_value <= int(value[:-2]) <= upper_value)
         return valid_units and valid_range
 
     def _validate_hcl_value(self, value):
-        pattern = r"#[0-9a-f]{6}"
+        pattern = r"^#[0-9a-f]{6}$"
         valid_string = re.match(pattern, value)
         return valid_string is not None
 
@@ -98,7 +113,7 @@ class Passport:
         return value in valid_values
 
     def _validate_pid_value(self, value):
-        pattern = r"[0-9]{9}"
+        pattern = r"^[0-9]{9}$"
         valid_string = re.match(pattern, value)
         return valid_string is not None
 
