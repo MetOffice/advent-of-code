@@ -43,23 +43,31 @@ class Passport:
         Bool
             True if the passport is valid
         """
-
-        result = True
+        all_fields_present = True
+        all_values_valid = True
+        fields_to_validate = []
         missing_fields = []
+
+        # check existence of fields
         for field in self.required_fields:
             value = getattr(self, field)
             if value is None:
                 if field not in ignorable_fields:
                     missing_fields.append(field)
-                    result = False
+                    all_fields_present = False
                     break
             else:
-                if validate_values:
-                    result = self._validate_value(field, value)
+                fields_to_validate.append(field)
+
+        # check values
+        if validate_values:
+            for field in fields_to_validate:
+                value = getattr(self, field)
+                all_values_valid = all_values_valid and self._validate_value(field, value)
 
         if missing_fields:
             print(f"Missing fields {missing_fields}")
-        return result
+        return all_fields_present and all_values_valid
 
     # TODO: Write tests for the following validate functions to get the
     # correct answer for part 2 :)
