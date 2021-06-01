@@ -6,6 +6,7 @@ def read_input(filepath):
     with open(filepath) as f:
         return list(map(int, f.readlines()))
 
+
 def sum_to_target(transactions, target=2020):
 
     transactions = set(transactions)
@@ -16,6 +17,7 @@ def sum_to_target(transactions, target=2020):
             return tuple(sorted((bill, (target - bill))))
             # defining a tuple
 
+
 def find_target(transactions, target=2020):
     for number in transactions:
         new_target = target - number
@@ -25,9 +27,10 @@ def find_target(transactions, target=2020):
         # * unpacks the tuple output by sum_to_target
         #
 
+
 def main():
 
-    transactions = read_input('../input.txt')
+    transactions = read_input("../input.txt")
     # print(transactions)
 
     num1, num2 = sum_to_target(transactions)
@@ -43,6 +46,5 @@ def main():
     print(part2_answer)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-

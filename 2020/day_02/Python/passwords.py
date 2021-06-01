@@ -46,10 +46,10 @@ def parse_input(contents: List[str]) -> Tuple[int, int, str, str]:
         # Using match groups: https://docs.python.org/3/library/re.html#re.Match.group
         matched = re.search(pattern, line, re.VERBOSE)
         if matched:
-            min_count = int(matched.group('min_count'))
-            max_count = int(matched.group('max_count'))
-            character = matched.group('character')
-            password = matched.group('password')
+            min_count = int(matched.group("min_count"))
+            max_count = int(matched.group("max_count"))
+            character = matched.group("character")
+            password = matched.group("password")
             yield min_count, max_count, character, password
 
 
@@ -81,7 +81,7 @@ def validate_password_part_2(position_1, position_2, character, password):
 
     if password[position_1] == character:
         matches += 1
-    
+
     if password[position_2] == character:
         matches += 1
 
@@ -96,12 +96,11 @@ def main():
         if validate_password_part_1(min_count, max_count, character, password):
             valid_passwords_part_1 += 1
         if validate_password_part_2(min_count, max_count, character, password):
-            valid_passwords_part_2 += 1            
+            valid_passwords_part_2 += 1
     return valid_passwords_part_1, valid_passwords_part_2
 
 
 if __name__ == "__main__":
     result_part_1, result_part_2 = main()
-    print(f'Number of valid passwords for part 1 = {result_part_1}')
-    print(f'Number of valid passwords for part 2 = {result_part_2}')
-
+    print(f"Number of valid passwords for part 1 = {result_part_1}")
+    print(f"Number of valid passwords for part 2 = {result_part_2}")

@@ -1,6 +1,4 @@
-from passports import (
-    parse_passport, Passport, get_passports, count_valid_passports
-)
+from passports import parse_passport, Passport, get_passports, count_valid_passports
 import pytest
 
 # NO NEW LINE AT THE END OF THE INPUT!
@@ -16,12 +14,14 @@ ecl:brn pid:760753108 byr:1931
 hgt:179cm
 
 hcl:#cfa07d eyr:2025 pid:166559648
-iyr:2011 ecl:brn hgt:59in""".split("\n")
+iyr:2011 ecl:brn hgt:59in""".split(
+    "\n"
+)
 
 
-#@pytest.mark.parametrize(
+# @pytest.mark.parametrize(
 #    "right, down, expected", [(1, 1, 2), (3, 1, 7), (5, 1, 3), (7, 1, 4), (1, 2, 2)]
-#)
+# )
 def test_parse_passport():
     expected_len = 4
     actual = parse_passport(INPUT_DATA)
@@ -41,7 +41,8 @@ def test_parse_passport():
             iyr="2017",
             cid="147",
             hgt="183cm",
-            ))
+        )
+    )
     expected_passports.append(
         Passport(
             iyr="2013",
@@ -51,7 +52,8 @@ def test_parse_passport():
             pid="028048884",
             hcl="#cfa07d",
             byr="1929",
-            ))
+        )
+    )
     expected_passports.append(
         Passport(
             hcl="#ae17e1",
@@ -61,7 +63,8 @@ def test_parse_passport():
             pid="760753108",
             byr="1931",
             hgt="179cm",
-            ))
+        )
+    )
     expected_passports.append(
         Passport(
             hcl="#cfa07d",
@@ -70,30 +73,54 @@ def test_parse_passport():
             iyr="2011",
             ecl="brn",
             hgt="59in",
-            ))
+        )
+    )
     assert actual == expected_passports
+
 
 def test_passport_equality():
     passport_a = Passport(
-        ecl="gry", pid="860033327", eyr="2020", hcl="#fffffd",
-        byr="1937", iyr="2017", hgt="183cm"
+        ecl="gry",
+        pid="860033327",
+        eyr="2020",
+        hcl="#fffffd",
+        byr="1937",
+        iyr="2017",
+        hgt="183cm",
     )
     passport_b = Passport(
-        ecl="gry", pid="860033327", eyr="2020", hcl="#fffffd",
-        byr="1937", iyr="2017", hgt="183cm"
+        ecl="gry",
+        pid="860033327",
+        eyr="2020",
+        hcl="#fffffd",
+        byr="1937",
+        iyr="2017",
+        hgt="183cm",
     )
 
     assert passport_a == passport_b
 
+
 def test_passport_inequality():
-    '''Have altered eye colour and added 'cid' '''
+    """Have altered eye colour and added 'cid' """
     passport_a = Passport(
-        ecl="gry", pid="860033327", eyr="2020", hcl="#dddddd",
-        byr="1937", iyr="2017", hgt="183cm", cid="147"
+        ecl="gry",
+        pid="860033327",
+        eyr="2020",
+        hcl="#dddddd",
+        byr="1937",
+        iyr="2017",
+        hgt="183cm",
+        cid="147",
     )
     passport_b = Passport(
-        ecl="gry", pid="860033327", eyr="2020", hcl="#fffffd",
-        byr="1937", iyr="2017", hgt="183cm"
+        ecl="gry",
+        pid="860033327",
+        eyr="2020",
+        hcl="#fffffd",
+        byr="1937",
+        iyr="2017",
+        hgt="183cm",
     )
 
     assert passport_a != passport_b
@@ -101,8 +128,13 @@ def test_passport_inequality():
 
 def test_validate_passport_missing_cid():
     passport = Passport(
-        ecl="gry", pid="860033327", eyr="2020", hcl="#fffffd",
-        byr="1937", iyr="2017", hgt="183cm"
+        ecl="gry",
+        pid="860033327",
+        eyr="2020",
+        hcl="#fffffd",
+        byr="1937",
+        iyr="2017",
+        hgt="183cm",
     )
     ignorable_fields = ["cid"]
     actual = passport.validate(ignorable_fields)
@@ -111,8 +143,7 @@ def test_validate_passport_missing_cid():
 
 def test_validate_passport_missing_eyr():
     passport = Passport(
-        ecl="gry", pid="860033327", hcl="#fffffd",
-        byr="1937", iyr="2017", hgt="183cm"
+        ecl="gry", pid="860033327", hcl="#fffffd", byr="1937", iyr="2017", hgt="183cm"
     )
     ignorable_fields = ["cid"]
     actual = passport.validate(ignorable_fields)
@@ -135,9 +166,9 @@ def test_count_valid_passports_no_ignorable_fields():
     assert actual == expected
 
 
-@pytest.mark.parametrize("input, expected", [("#123abc", True),
-                                             ("#123abz", False),
-                                             ("123abc", False)])
+@pytest.mark.parametrize(
+    "input, expected", [("#123abc", True), ("#123abz", False), ("123abc", False)]
+)
 def test__validate_hcl_value(input, expected):
     passport = Passport()
 
@@ -145,20 +176,20 @@ def test__validate_hcl_value(input, expected):
     assert expected == result
 
 
-@pytest.mark.parametrize("input, expected",
-                             [("60in", True),
-                              ("190cm", True),
-                              ("190in", False),
-                              ("190", False)])
+@pytest.mark.parametrize(
+    "input, expected",
+    [("60in", True), ("190cm", True), ("190in", False), ("190", False)],
+)
 def test__validate_hgt_value(input, expected):
     passport = Passport()
     result = passport._validate_hgt_value(input)
     assert expected == result
 
 
-@pytest.mark.parametrize("input, expected", [("000000001", True),
-                                             ("0123456789", False),
-                                             ("19238459j", False)])
+@pytest.mark.parametrize(
+    "input, expected",
+    [("000000001", True), ("0123456789", False), ("19238459j", False)],
+)
 def test__validate_pid_value(input, expected):
     passport = Passport()
     result = passport._validate_pid_value(input)

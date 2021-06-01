@@ -7,7 +7,7 @@ def count_trees(tree_pattern, right, down):
     trees_found = 0
     line_length = len(tree_pattern[0])
 
-    tree = '#'
+    tree = "#"
 
     while y_position < len(tree_pattern):
         # check if tree/not_tree
@@ -32,9 +32,9 @@ def multiply_all_the_trees(tree_pattern):
 
 def main():
     tree_pattern = load_string()
-    print(f'Part 1 result: {count_trees(tree_pattern, right=3, down=1)}')
-    print(f'Part 2 result: {multiply_all_the_trees(tree_pattern)}')
+    print(f"Part 1 result: {count_trees(tree_pattern, right=3, down=1)}")
+    print(f"Part 2 result: {multiply_all_the_trees(tree_pattern)}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

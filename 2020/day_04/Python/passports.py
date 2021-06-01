@@ -2,10 +2,20 @@ import re
 
 from common.loaders import load_string
 
+
 class Passport:
-    def __init__(self, byr=None, iyr=None, eyr=None, hgt=None,
-                 hcl=None, ecl=None, pid=None, cid=None):
-        ''' byr (Birth Year)
+    def __init__(
+        self,
+        byr=None,
+        iyr=None,
+        eyr=None,
+        hgt=None,
+        hcl=None,
+        ecl=None,
+        pid=None,
+        cid=None,
+    ):
+        """ byr (Birth Year)
             iyr (Issue Year)
             eyr (Expiration Year)
             hgt (Height)
@@ -13,7 +23,7 @@ class Passport:
             ecl (Eye Color)
             pid (Passport ID)
             cid (Country ID)
-        '''
+        """
         self.byr = byr
         self.iyr = iyr
         self.eyr = eyr
@@ -22,9 +32,7 @@ class Passport:
         self.ecl = ecl
         self.pid = pid
         self.cid = cid
-        self.required_fields = [
-            "ecl", "pid", "eyr", "hcl", "byr", "iyr", "hgt", "cid"]
-
+        self.required_fields = ["ecl", "pid", "eyr", "hcl", "byr", "iyr", "hgt", "cid"]
 
     def validate(self, ignorable_fields, validate_values=False):
         """
@@ -63,7 +71,9 @@ class Passport:
         if validate_values:
             for field in fields_to_validate:
                 value = getattr(self, field)
-                all_values_valid = all_values_valid and self._validate_value(field, value)
+                all_values_valid = all_values_valid and self._validate_value(
+                    field, value
+                )
 
         if missing_fields:
             print(f"Missing fields {missing_fields}")
@@ -107,8 +117,7 @@ class Passport:
             valid_units = False
         valid_range = True
         if valid_units:
-            valid_range = (
-                    lower_value <= int(value[:-2]) <= upper_value)
+            valid_range = lower_value <= int(value[:-2]) <= upper_value
         return valid_units and valid_range
 
     def _validate_hcl_value(self, value):
@@ -126,20 +135,24 @@ class Passport:
         return valid_string is not None
 
     def __eq__(self, other):
-        '''test for equality in 2 passports'''
-        return all([self.byr == other.byr,
-                    self.iyr == other.iyr,
-                    self.eyr == other.eyr,
-                    self.hgt == other.hgt,
-                    self.hcl == other.hcl,
-                    self.ecl == other.ecl,
-                    self.pid == other.pid,
-                    self.cid == other.cid])
+        """test for equality in 2 passports"""
+        return all(
+            [
+                self.byr == other.byr,
+                self.iyr == other.iyr,
+                self.eyr == other.eyr,
+                self.hgt == other.hgt,
+                self.hcl == other.hcl,
+                self.ecl == other.ecl,
+                self.pid == other.pid,
+                self.cid == other.cid,
+            ]
+        )
 
 
 def parse_passport(lines):
-    '''Provided with lines from an input file, splits them into passport records
-    and then splits each record into the attributes of a passport'''
+    """Provided with lines from an input file, splits them into passport records
+    and then splits each record into the attributes of a passport"""
     current_passport = Passport()
     passports = []
 
@@ -164,8 +177,9 @@ def get_passports(input_data):
 def count_valid_passports(passports, ignorable_fields):
     valid_passports = 0
     for passport in passports:
-        valid_passports += int(passport.validate(ignorable_fields,
-                                                 validate_values=True))
+        valid_passports += int(
+            passport.validate(ignorable_fields, validate_values=True)
+        )
     return valid_passports
 
 
@@ -178,5 +192,5 @@ def main():
     return count
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(main())

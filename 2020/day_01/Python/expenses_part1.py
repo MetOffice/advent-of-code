@@ -6,6 +6,7 @@ def read_input(filepath):
     with open(filepath) as f:
         return list(map(int, f.readlines()))
 
+
 def sum_to_2020(transactions):
 
     transactions = set(transactions)
@@ -17,10 +18,9 @@ def sum_to_2020(transactions):
             # defining a tuple
 
 
-
 def main():
 
-    transactions = read_input('../input.txt')
+    transactions = read_input("../input.txt")
     # print(transactions)
 
     num1, num2 = sum_to_2020(transactions)
@@ -29,6 +29,6 @@ def main():
 
     print(answer)
 
-if __name__ == '__main__':
-    main()
 
+if __name__ == "__main__":
+    main()

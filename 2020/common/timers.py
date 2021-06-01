@@ -4,6 +4,7 @@ import functools
 
 def do_twice(func):
     """Runs function func twice"""
+
     @functools.wraps(func)
     def _do_twice(*args, **kwargs):
         result1 = func(*args, **kwargs)
@@ -52,5 +53,5 @@ def main():
     print(prove1.__doc__)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -69,7 +69,7 @@ def part2():
         seat_id = compute_seat_id(boarding_pass)
         seats.add(seat_id)
 
-    all_seats = set(range(min(seats), max(seats)+1))
+    all_seats = set(range(min(seats), max(seats) + 1))
 
     my_seat = all_seats - seats
     if len(my_seat) != 1:
