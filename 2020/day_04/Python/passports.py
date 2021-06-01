@@ -15,14 +15,14 @@ class Passport:
         pid=None,
         cid=None,
     ):
-        """ byr (Birth Year)
-            iyr (Issue Year)
-            eyr (Expiration Year)
-            hgt (Height)
-            hcl (Hair Color)
-            ecl (Eye Color)
-            pid (Passport ID)
-            cid (Country ID)
+        """byr (Birth Year)
+        iyr (Issue Year)
+        eyr (Expiration Year)
+        hgt (Height)
+        hcl (Hair Color)
+        ecl (Eye Color)
+        pid (Passport ID)
+        cid (Country ID)
         """
         self.byr = byr
         self.iyr = iyr
@@ -37,11 +37,12 @@ class Passport:
     def validate(self, ignorable_fields, validate_values=False):
         """
         Validate the passport
+
         Parameters
         ----------
         ignorable_fields: List(str)
             A list of three letter codes which are the fields we can ignore,
-             and have no bearing on validation
+            and have no bearing on validation
         validate_values: Bool
             Only validate the value if there is a value to validate.
             If false we just validate the presence of the fields, not their contents.
