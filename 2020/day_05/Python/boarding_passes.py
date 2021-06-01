@@ -34,13 +34,13 @@ def compute_seat_id(boarding_pass: str) -> int:
 
     Parameters
     ----------
-    boarding_pass:
-        A boarding pass string
+    boarding_pass :
+        A boarding pass
 
     Returns
     -------
     :
-        The seat id as an integer
+        The seat id
 
     """
 
@@ -50,7 +50,8 @@ def compute_seat_id(boarding_pass: str) -> int:
     row_int = convert_binary_to_integer(row)
     column_int = convert_binary_to_integer(column, zero="L", one="R")
 
-    return row_int * 8 + column_int
+    seat_id = row_int * 8 + column_int
+    return seat_id
 
 
 def part1():
