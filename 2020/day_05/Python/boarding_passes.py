@@ -19,6 +19,7 @@ def convert_binary_to_integer(a_string, zero="F", one="B"):
     -------
     int
         The integer corresponding to the string (a_string)
+
     """
 
     a_string = a_string.replace(zero, "0").replace(one, "1")
@@ -38,6 +39,7 @@ def compute_seat_id(boarding_pass: str) -> int:
 
     Returns
     -------
+    :
         The seat id as an integer
 
     """
