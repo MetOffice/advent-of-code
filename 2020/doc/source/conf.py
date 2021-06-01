@@ -56,3 +56,10 @@ html_theme = "sphinx_rtd_theme"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 # html_static_path = ["_static"]
+
+
+# -- autodoc support for typehints -------------------------------------------
+# Should move typing from the function signatures to the docstring
+# Valid values are described in link below
+# https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html?highlight=autodoc_typehints#confval-autodoc_typehints
+autodoc_typehints = "description"
