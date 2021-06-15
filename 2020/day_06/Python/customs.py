@@ -1,7 +1,7 @@
 from common.loaders import load_string
 
 
-def count_group_answers(answers):
+def count_unique_group_answers(answers):
     """
     Return a count of unique answers within a group.
 
@@ -22,6 +22,27 @@ def count_group_answers(answers):
             unique_answers.add(char)
 
     return len(unique_answers)
+
+def count_common_group_answers(answers):
+    """
+    Return a count of common answers within a group.
+
+    Parameters
+    ----------
+    answers : list[str]
+        A list of strings containing the answers from a group.
+
+    Returns
+    -------
+    int
+        The number of unique questions answered by everyone
+        with a "yes".
+
+    """
+    common_answers = set(answers[0])
+    for answer in answers:
+        common_answers = common_answers & set(answer)
+    return len(common_answers)
 
 def get_group_answers(file_contents):
     """
@@ -54,11 +75,14 @@ def get_group_answers(file_contents):
 def part1(file_contents):
     sum_of_unique_answers = 0
     for answers in get_group_answers(file_contents):
-        sum_of_unique_answers += count_group_answers(answers)
+        sum_of_unique_answers += count_unique_group_answers(answers)
     print(f"Solution to part 1: {sum_of_unique_answers}")
 
 def part2(file_contents):
-    pass
+    sum_of_common_answers = 0
+    for answers in get_group_answers(file_contents):
+        sum_of_common_answers += count_common_group_answers(answers)
+    print(f"Solution to part 2: {sum_of_common_answers}")
 
 if __name__ == "__main__":
     file_contents = load_string()
