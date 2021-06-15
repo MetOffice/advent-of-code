@@ -91,17 +91,17 @@ class Passport:
         return result
 
     def _validate_byr_value(self, value):
-        four_digits = len(value) != 4
+        four_digits = len(value) == 4
         valid_range = 1920 <= int(value) <= 2002
         return four_digits and valid_range
 
     def _validate_iyr_value(self, value):
-        four_digits = len(value) != 4
+        four_digits = len(value) == 4
         valid_range = 2010 <= int(value) <= 2020
         return four_digits and valid_range
 
     def _validate_eyr_value(self, value):
-        four_digits = len(value) != 4
+        four_digits = len(value) == 4
         valid_range = 2020 <= int(value) <= 2030
         return four_digits and valid_range
 
