@@ -1,8 +1,9 @@
 import pytest
 from toboggan import count_trees, multiply_all_the_trees
 
-
-input_data = """..##.......
+# The [1:-1] below is to remove empty newlines which we put in to make it look nicer!
+input_data = """
+..##.......
 #...#...#..
 .#....#..#.
 ..#.#...#.#
@@ -12,7 +13,8 @@ input_data = """..##.......
 .#........#
 #.##...#...
 #...##....#
-.#..#...#.#""".split(
+.#..#...#.#
+"""[1:-1].split(
     "\n"
 )
 
