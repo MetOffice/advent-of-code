@@ -1,3 +1,6 @@
+import pytest
+import bags
+
 bag_rules = """
 light red bags contain 1 bright white bag, 2 muted yellow bags.
 dark orange bags contain 3 bright white bags, 4 muted yellow bags.
@@ -12,8 +15,9 @@ dotted black bags contain no other bags.
 
 
 def test_count_bag_colours():
+    """End to end test"""
     my_bag = "shiny gold"
-    actual_bag_count = count_bag_colours(my_bag, bag_rules)
+    actual_bag_count = bags.count_bag_colours(my_bag, bag_rules)
     expected_bag_count = 4
     error_msg = "".join(
         [
@@ -23,3 +27,28 @@ def test_count_bag_colours():
     )
 
     assert actual_bag_count == expected_bag_count, error_msg
+
+
+@pytest.mark.parametrize(
+    ("bag_rule", "expected"),
+    [
+        (
+            "light red bags contain 1 bright white bag, 2 muted yellow bags.",
+            ["light red", "1 bright white", "2 muted yellow"],
+        ),
+        (
+            "bright white bags contain 1 shiny gold bag.",
+            ["bright white", "1 shiny gold"],
+        ),
+        (
+            "dotted black bags contain no other bags.",
+            ["dotted black", "no other"],
+        ),
+    ],
+)
+def test_parse_bag_rules(bag_rule, expected):
+    """"""
+    actual_split = bags.parse_bag_rules(bag_rule)
+    error_msg = f"Unexpected bag split {actual_split}\nExpected {expected}"
+
+    assert actual_split == expected, error_msg
