@@ -46,9 +46,34 @@ def test_count_bag_colours():
         ),
     ],
 )
-def test_parse_bag_rules(bag_rule, expected):
+def test_parse_bag_rule(bag_rule, expected):
     """"""
-    actual_split = bags.parse_bag_rules(bag_rule)
+    actual_split = bags.parse_bag_rule(bag_rule)
     error_msg = f"Unexpected bag split {actual_split}\nExpected {expected}"
 
     assert actual_split == expected, error_msg
+
+
+@pytest.mark.parametrize(
+    ("bag_rule", "expected"),
+    [
+        (
+            ["light red", "1 bright white", "2 muted yellow"],
+            ("light red", {"bright white": 1, "muted yellow": 2}),
+        ),
+        (
+            ["bright white", "1 shiny gold"],
+            ("bright white", {"shiny gold": 1}),
+        ),
+        (
+            ["dotted black", "no other"],
+            ("dotted black", dict()),
+        ),
+    ],
+)
+def test_organise_bag_rule(bag_rule, expected):
+    """"""
+    actual = bags.organise_bag_rule(bag_rule)
+    error_msg = f"Unexpected item in the bag rule area {actual}\nExpected {expected}"
+
+    assert actual == expected, error_msg
