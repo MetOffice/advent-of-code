@@ -1,8 +1,10 @@
+from common import timers
 
 def main():
     pass
 
 
+@timers.print_duration
 def count_bag_colours(my_bag, bag_rules):
     """
     Return how many outermost bag colors can eventually contain at least one
@@ -112,3 +114,12 @@ def organise_bag_rule(parsed_rule):
             """Handling the no other case: 'no' isn't an integer."""
             pass
     return (key, inner_dict)
+
+
+if __name__ == "__main__":
+    from common import loaders
+
+    bag_rules = loaders.load_string()
+    bag_rules = '\n'.join(bag_rules)
+    count = count_bag_colours("shiny gold", bag_rules)
+    print(count)  # 372
