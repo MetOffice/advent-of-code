@@ -1,3 +1,4 @@
+import numpy as np
 
 def main():
     pass
@@ -41,9 +42,39 @@ def count_bag_colours(my_bag, bag_rules):
 
 
 def parse_bag_rule(bag_rule):
-    """"""
-    # "light red bags contain 1 bright white bag, 2 muted yellow bags."
-    # ["light red", "1 bright white", "2 muted yellow"],
+    """
+
+    Parameters
+    ----------
+    bag_rule
+
+    Returns
+    -------
+
+    Examples
+    --------
+    >>> parse_bag_rule("light red bags contain 1 bright white bag, 2 muted yellow bags.")
+    ['light red', '1 bright white', '2 muted yellow']
+
+    >>> a = "light red bags contain 1 bright white bag, 2 muted yellow bags." #notatest
+    >>> parse_bag_rule(a)
+    ['light red', '1 bright white', '2 muted yellow']
+
+    # >>> for s in [1,2,3]:
+    # ...     for t in [4,5,6]:
+    # ...         print(s*t)
+
+    # >>> a = np.ones([9, 5, 7, 4])
+    # >>> c = np.ones([9, 5, 4, 3])
+    # >>> np.dot(a, c).shape
+    # (9, 5, 7, 9, 5, 3)
+    # >>> np.matmul(a, c).shape
+    # (9, 5, 7, 3)
+    #
+    # # n is 7, k is 4, m is 3
+    """
+
+
     results = []
     contains_str = "bags contain"
     cleaned = [item.strip() for item in bag_rule.split(contains_str)]
@@ -83,6 +114,11 @@ def organise_bag_rule(parsed_rule):
         First element of tuple is parent bag colour.  Second element is a
         dictionary, where dictionary has keys of child bag colours
         and values of child bag counts.
+
+    Examples
+    --------
+    >>> organise_bag_rule(["light red", "1 bright white", "2 muted yellow"])
+    ('light red', {'bright white': 1, 'muted yellow': 2})
 
     """
     key = parsed_rule.pop(0)
