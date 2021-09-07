@@ -1,13 +1,9 @@
 import pytest
 
-from accumulator import (
-    calculate_accumulator_value_part_1,
-    calculate_accumulator_value_part_2,
-    fix_program,
-)
+from accumulator import InfiniteLoopException, run, fix_program
 
 
-def test_accumulator_value_part_1():
+def test_run_infinite_loop():
     program = [
         "nop +0",
         "acc +1",
@@ -20,27 +16,12 @@ def test_accumulator_value_part_1():
         "acc +6",
     ]
     expected = 5
-    output = calculate_accumulator_value_part_1(program)
-    assert output == expected
+    with pytest.raises(InfiniteLoopException) as exc:
+        output = run(program)
+    assert exc.value.accumulator == expected
 
 
-def test_accumlator_value_infinite_loop_part_2():
-    program = [
-        "jmp +0",
-        "acc +1",
-        "jmp +4",
-        "acc +3",
-        "jmp -3",
-        "acc -99",
-        "acc +1",
-        "jmp -4",
-        "acc +6",
-    ]
-    with pytest.raises(RuntimeError):
-        calculate_accumulator_value_part_2(program)
-
-
-def test_accumlator_value_program_terminates_part_2():
+def test_run_terminates():
     program = [
         "nop +0",
         "acc +1",
@@ -53,7 +34,7 @@ def test_accumlator_value_program_terminates_part_2():
         "acc +6",
     ]
     expected = 8
-    output = calculate_accumulator_value_part_2(program)
+    output = run(program)
     assert output == expected
 
 
@@ -69,6 +50,6 @@ def test_fix_program():
         "jmp -4",
         "acc +6",
     ]
-    expected = 8        
+    expected = 8
     output = fix_program(program)
     assert output == expected

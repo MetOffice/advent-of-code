@@ -1,48 +1,21 @@
-from copy import copy
+from typing import List, Optional
 
 from common.loaders import load_string
 
-def calculate_accumulator_value_part_1(program):
+
+class InfiniteLoopException(RuntimeError):
+    def __init__(self, accumulator):
+        message = f"Infinite loop error - accumulator = {accumulator}"
+        super().__init__(message)
+        self.accumulator = accumulator
+
+
+def run(program):
     """
-    Return the accumulator value immediately before the instructions are
-    repeated.
+    Run the program until the final instruction in the list is run or a loop is found.
 
     Instructions are in the form ``XXX +/-#``:
-    
 
-    Parameters
-    ----------
-    program: list
-        The instructions in the program.
-
-    """
-    accumulator_value = 0
-    index = 0
-    seen_indices = set()
-    while index not in seen_indices:
-        seen_indices.add(index)
-        instruction = program[index]
-        operation, argument = instruction.split()
-        argument = int(argument)
-        if operation == "acc":
-            accumulator_value += argument
-            index += 1
-        elif operation == "jmp":
-            index += argument
-        elif operation == "nop":
-            index += 1
-        else:
-            raise RuntimeError(f"Invalid operation: {operation}")
-    return accumulator_value
-    
-
-def calculate_accumulator_value_part_2(program):
-    """
-    Return the accumulator value immediately before the instructions are
-    repeated.
-
-    Instructions are in the form ``XXX +/-#``:
-    
 
     Parameters
     ----------
@@ -71,37 +44,39 @@ def calculate_accumulator_value_part_2(program):
             index += 1
         else:
             raise RuntimeError(f"Invalid operation: {operation}")
-    raise RuntimeError("Infinite loop")
+    raise InfiniteLoopException(accumulator_value)
 
 
-def fix_program(program):
-    orig_program = program
-    accumulator_value = None
-    for index, instruction in enumerate(orig_program):
-        program = copy(orig_program)
+def fix_program(program: List[str]) -> Optional[int]:
+    for index, instruction in enumerate(program):
         if instruction.startswith("acc"):
             continue
-        elif instruction.startswith("jmp"):
-            program[index] = program[index].replace("jmp", "nop")
+        new_program = program.copy()
+        if instruction.startswith("jmp"):
+            new_program[index] = new_program[index].replace("jmp", "nop")
         elif instruction.startswith("nop"):
-            program[index] = program[index].replace("nop", "jmp")
+            new_program[index] = new_program[index].replace("nop", "jmp")
         else:
             raise RuntimeError(f"Invalid instruction: {instruction}")
         try:
-            accumulator_value = calculate_accumulator_value_part_2(program)
+            accumulator_value = run(new_program)
+            print(
+                f"Edited instruction at index {index}: "
+                f"{program[index]} --> {new_program[index]}"
+            )
+            return accumulator_value
         except RuntimeError:
-            pass
-        if accumulator_value:
-            print(f"Edited instruction at index {index}: "
-                  f"{orig_program[index]} --> {program[index]}")
-            break
-    return accumulator_value
-    
+            continue
+    return None
+
 
 if __name__ == "__main__":
     file_contents = load_string()
-    accumulator_value = calculate_accumulator_value_part_1(file_contents)
-    print(f"Part 1: {accumulator_value}")
+    try:
+        accumulator_value_2 = run(file_contents)
+        raise Exception("No loop found")
+    except InfiniteLoopException as exc:
+        print(f"Part 1: {exc.accumulator}")
+
     accumulator_value = fix_program(file_contents)
     print(f"Part 2: {accumulator_value}")
-    
