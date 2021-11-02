@@ -60,7 +60,8 @@ def count_jolt_distribution(diffs):
 
 def count_combinations(sorted_chain):
     """
-    Takes a sorted chain, in the longest possible formation. Counts the number of other valid combinations.
+    Takes a sorted chain, in the longest possible formation. Counts the number
+    of other valid combinations.
 
     Parameters
     ----------
@@ -69,6 +70,7 @@ def count_combinations(sorted_chain):
     Returns
     -------
     int
+
     """
     if find_jolt_distribution(sorted_chain)[0:1] == (0, 0):
         # stop now
@@ -167,7 +169,7 @@ def main_part2(input=None):
     return num_combinations
 
 
-
 if __name__ == "__main__":
-    result = main_part2()
-    print(result)
+    print(f"Part 1: {main_part1()}")
+    print(f"Part 2: {main_part2()}")
+

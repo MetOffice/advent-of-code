@@ -5,13 +5,20 @@ import adapters
 def test_find_chain():
     adapters_list = "16, 10, 15, 5, 1, 11, 7, 19, 6, 12, 4".strip().split(",")
     output = adapters.find_chain(adapters_list)
-    expected = [1, 4, 5, 6, 7, 10, 11, 12, 15, 16, 19]
+    expected = [0, 1, 4, 5, 6, 7, 10, 11, 12, 15, 16, 19, 22]
     assert output == expected
 
 
 def test_find_jolt_distribution():
     input = [0, 1, 4, 5, 6, 7, 10, 11, 12, 15, 16, 19, 22]
     output = adapters.find_jolt_distribution(input)
+    expected = [1, 3, 1, 1, 1, 3, 1, 1, 3, 1, 3, 3]
+    assert output == expected
+
+
+def test_count_jolt_distribution():
+    input = [1, 3, 1, 1, 1, 3, 1, 1, 3, 1, 3, 3]
+    output = adapters.count_jolt_distribution(input)
     expected = (7, 0, 5)
     assert output == expected
 
