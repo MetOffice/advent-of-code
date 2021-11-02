@@ -37,7 +37,7 @@ def find_chain(adapters):
 
 def find_jolt_distribution(chain):
     """
-    Finds the number of 1, 2 or 3 jolt differences in the chain
+    Return the differences between the numbers in the chain.
 
     Parameters
     ----------
@@ -55,13 +55,16 @@ def find_jolt_distribution(chain):
 
 
 def count_jolt_distribution(diffs):
+    """
+    Finds the number of 1, 2 or 3 jolt differences in the chain.
+    """
     return diffs.count(1), diffs.count(2), diffs.count(3)
 
 
 def count_combinations(sorted_chain):
     """
-    Takes a sorted chain, in the longest possible formation. Counts the number
-    of other valid combinations.
+    Takes a sorted chain, in the longest possible formation.
+    Counts the number of other valid combinations.
 
     Parameters
     ----------
@@ -72,9 +75,28 @@ def count_combinations(sorted_chain):
     int
 
     """
-    if find_jolt_distribution(sorted_chain)[0:1] == (0, 0):
-        # stop now
-        pass
+    # f(0) and f(1), which are both 1.
+    # The 'answers' list will only ever have 3 elements thanks to the
+    # "double-ended queue", see
+    # https://docs.python.org/3/library/collections.html#collections.deque.
+    answers = collections.deque([1, 1], maxlen=3)
+
+    # f(2).
+    answers.append(1 + is_valid_jolt(sorted_chain[0], sorted_chain[2]))
+    
+    # f(k); get answers for remaining items in list.
+    for index, number in enumerate(sorted_chain[3:], start=3):
+        first_term = answers[-1]
+        second_term = is_valid_jolt(
+            sorted_chain[index - 2], sorted_chain[index]) * answers[-2]
+        third_term = is_valid_jolt(
+            sorted_chain[index - 3], sorted_chain[index]) * answers[-3]
+        answers.append(first_term + second_term + third_term)
+    return answers[-1]
+
+
+def is_valid_jolt(input1, input2):
+    return input2 - input1 <= 3
 
 
 def main_part1(input=None):
@@ -93,80 +115,7 @@ def main_part2(input=None):
     if input is None:
         input = loaders.load_string()
     chain = find_chain(input)
-    dist = find_jolt_distribution(chain)
-
-    blocks = []
-    new_block = []
-    for i, item in enumerate(dist):
-        new_block.append(chain[i])
-
-        if item == 3:
-            blocks.append(new_block)
-            new_block = []
-            # we have hit the end of a block
-
-    num_combinations = 1  # the initial combo
-    # [4, 5, 6, 7, 9, 10, 11]
-    # [1, 1, 1, 1, 2, 1, 1]
-
-    # [4, 6, 7, 9, 10, 11]
-    # [4, 5, 7, 9, 10, 11]
-    # [4, 7, 9, 10, 11]
-    # [4, 7, 9, 10, 11]
-    # [4, 6, 9, 10]
-    # [4, 5, 6, 7, 9, 10]
-    # [4, 7, 10]
-
-    for small_block in blocks:
-        # if len(small_block) > 4:
-        #     small_block_dist = find_jolt_distribution(small_block)
-        #     for group in sliding_window(small_block_dist, 4):
-        #         # [1, 1, 1, 1] = 4
-        #         # [1, 1, 1, 2] = 3
-        #         # [1, 1, 2, 1] = 3
-        #         # [1, 2, 1, 1] = 3
-        #         # [2, 1, 1, 1] = 3
-        #         # [1, 1, 2, 2] =
-        #         # [1, 2, 1, 2] =
-        #         # [1, 2, 2, 1] =
-        #         # [2, 1, 2, 1] =
-        #         # [2, 2, 2, 1] =
-        #         # [
-        #         if sum(group) == 4:
-        #             num_combinations *= 4
-        #         elif sum(group) == 5:
-        #             num_combinations *= 3
-        #
-        # elif len(small_block) == 4:
-        #     # [1, 1, 1] = 3
-        #     # [1, 1, 2] = 2
-        #     # [1, 2, 1] = 2
-        #     # [2, 1, 1] = 2
-        #     # [2, 2, 1] = 2
-        #     # [1, 2, 2] = 2
-        #     # [2, 2, 2]
-        #     small_block_dist = find_jolt_distribution(small_block)
-        #     if sum(small_block_dist) == 3:
-        #         num_combinations *= 4
-        #     elif sum(small_block_dist) == 4:
-        #         num_combinations *= 3
-
-        if len(small_block) >= 3:
-            small_block_dist = find_jolt_distribution(small_block)
-            # e.g. [10, 11, 12], [10, 12, 13], [10, 11, 13]
-            # [1, 1] = 2
-            # [1, 2] = 2
-            # [2, 1] = 2
-            # [2, 2] = 1
-
-            for group in sliding_window(small_block_dist, 2):
-
-                if sum(group) == 4:
-                    num_combinations *= 1
-                else:
-                    num_combinations *= 2
-
-    return num_combinations
+    return count_combinations(chain)
 
 
 if __name__ == "__main__":
