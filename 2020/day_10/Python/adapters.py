@@ -83,14 +83,18 @@ def count_combinations(sorted_chain):
 
     # f(2).
     answers.append(1 + is_valid_jolt(sorted_chain[0], sorted_chain[2]))
-    
+
     # f(k); get answers for remaining items in list.
     for index, number in enumerate(sorted_chain[3:], start=3):
         first_term = answers[-1]
-        second_term = is_valid_jolt(
-            sorted_chain[index - 2], sorted_chain[index]) * answers[-2]
-        third_term = is_valid_jolt(
-            sorted_chain[index - 3], sorted_chain[index]) * answers[-3]
+        second_term = (
+            is_valid_jolt(sorted_chain[index - 2], sorted_chain[index])
+            * answers[-2]
+        )
+        third_term = (
+            is_valid_jolt(sorted_chain[index - 3], sorted_chain[index])
+            * answers[-3]
+        )
         answers.append(first_term + second_term + third_term)
     return answers[-1]
 
@@ -121,4 +125,3 @@ def main_part2(input=None):
 if __name__ == "__main__":
     print(f"Part 1: {main_part1()}")
     print(f"Part 2: {main_part2()}")
-
