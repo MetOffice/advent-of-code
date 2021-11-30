@@ -1,4 +1,7 @@
+#!/usr/bin/env python
 import copy
+from common import loaders
+
 
 def process_puzzle_input(puzzle_input):
     """
@@ -26,7 +29,7 @@ def get_adjacent_seats(seat_layout, seat_location):
 
     # find adjacent seats by loop
     adjacent_seats = []
-    
+
     seat_x = max(seat_location_x - 1, 0)
     seat_y = max(seat_location_y - 1, 0)
     for x in range(seat_x, seat_location_x + 2):
@@ -39,12 +42,13 @@ def get_adjacent_seats(seat_layout, seat_location):
 
     return adjacent_seats
 
+
 def apply_rules(seat_layout):
     """
     Apply rules once to the seat configuration.
     """
     new_seat_layout = copy.deepcopy(seat_layout)
-    
+
     for row_index, row in enumerate(seat_layout):
 
         for col_index, seat in enumerate(row):
@@ -58,11 +62,27 @@ def apply_rules(seat_layout):
                 new_seat = seat
             #print(new_seat_layout[row_index])
             new_seat_layout[row_index][col_index] = new_seat
-    
+
     return new_seat_layout
+
 
 def run(initial_seat_layout):
     """
     Apply rules until the configuration reaches 'equilbrium' - applying the rules again changes nothing
     """
-    pass
+    # iterate apply rules until seat layout doesn't change
+    previous_layout = initial_seat_layout
+    new_layout = apply_rules(initial_seat_layout)
+    while new_layout != previous_layout:
+        previous_layout = new_layout
+        new_layout = apply_rules(previous_layout)
+    return new_layout
+
+
+if __name__ == "__main__":
+    # load initial seat layout and run
+    initial_layout = loaders.load_string()
+    initial_layout = process_puzzle_input(initial_layout)
+    final_layout = run(initial_layout)
+    number_of_seats = count_occupied_seats(final_layout)
+    print(f'Part 1: {number_of_seats}')
