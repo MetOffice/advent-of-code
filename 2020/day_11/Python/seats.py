@@ -21,11 +21,7 @@ def get_adjacent_seats(seat_layout, seat_location):
     """
     Given a seat_layout and a seat_location, return a list of seat 'chars'.
     """
-    layout_size_x = len(seat_layout[0])
-    layout_size_y = len(seat_layout)
-
-    seat_location_x = seat_location[0]
-    seat_location_y = seat_location[1]
+    seat_location_x, seat_location_y = seat_location
 
     # find adjacent seats by loop
     adjacent_seats = []
@@ -43,7 +39,42 @@ def get_adjacent_seats(seat_layout, seat_location):
     return adjacent_seats
 
 
-def apply_rules(seat_layout):
+# Add apply rules for part2
+# new function for get_visible_seats
+def get_visible_seats(seat_layout, seat_location):
+    """
+    Given a seat_layout and a seat_location, return a list of seat 'chars' of
+    first visible seat in each direction.  Seats returned north west first,
+    and raster order.
+
+    """
+    seat_location_x, seat_location_y = seat_location
+
+    # find visible seats by loop
+    visible_seats = ['.', '.', '.', '.', '.', '.', '.', '.']
+
+    for n in range(1, max(len(seat_layout), len(seat_layout[0])) + 1):
+        # stop condition?
+        seat_x = max(seat_location_x - n, 0)
+        seat_y = max(seat_location_y - n, 0)
+
+        for x in range(seat_x, seat_location_x + n + 1, n):
+            for y in range(seat_y, seat_location_y + n + 1, n):
+                if (x != seat_location_x or y != seat_location_y): # don't count the seat we're on!!
+                    try:
+                        # only update visible seats if it's a floor
+                        direction_index = (n-1) % 8
+                        if visible_seats[direction_index] == '.':
+                            visible_seats[direction_index] = seat_layout[x][y]
+                        print(f"where we are: {x, y} seat layout: {seat_layout[x][y]}")
+                    except IndexError:
+                        pass
+                if '.' not in visible_seats:
+                    return visible_seats
+    return visible_seats
+
+
+def apply_part1_rules(seat_layout):
     """
     Apply rules once to the seat configuration.
     """
@@ -72,10 +103,10 @@ def run(initial_seat_layout):
     """
     # iterate apply rules until seat layout doesn't change
     previous_layout = initial_seat_layout
-    new_layout = apply_rules(initial_seat_layout)
+    new_layout = apply_part1_rules(initial_seat_layout)
     while new_layout != previous_layout:
         previous_layout = new_layout
-        new_layout = apply_rules(previous_layout)
+        new_layout = apply_part1_rules(previous_layout)
     return new_layout
 
 
