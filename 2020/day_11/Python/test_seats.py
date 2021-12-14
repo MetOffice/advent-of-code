@@ -43,7 +43,7 @@ def test_get_adjacent_seats(seat_location, expected):
     "example_input,seat_location,expected",
     [
         [layouts.part2_example1, (4, 3), ["#", "#", "#", "#", "#", "#", "#", "#"]],
-        [layouts.part2_example2, (1, 1), [".", ".", "L", ".", ".", ".", ".", "."]],
+        [layouts.part2_example2, (1, 1), [".", ".", ".", ".", ".", ".", "L", "."]],
         [layouts.part2_example3, (3, 3), [".", ".", ".", ".", ".", ".", ".", "."]],
     ],
 )
