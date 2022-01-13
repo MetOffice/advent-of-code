@@ -9,9 +9,21 @@ def read_input(filepath):
 class Ferry:
     """ class to handle ferry position and direction"""
 
+
+
     def __init__(self, coords, dir):
         self.coords = coords
         self.dir = dir
+        self.cardinals_to_coords = {
+            'N': np.array([0, 1]),
+            'W': np.array([-1, 0]),
+            'S': np.array([0, -1]),
+            'E': np.array([1, 0]),
+            90: np.array([0, 1]),
+            180: np.array([-1, 0]),
+            270: np.array([0, -1]),
+            0: np.array([1, 0])
+        }
 
     def update_ferry(self, data):
         action = data[0]
@@ -25,22 +37,30 @@ class Ferry:
                 moving_dir = self.dir
             else:
                 moving_dir = action
-            self.coords += value*cardinals_to_coords[moving_dir]
+            self.coords += value * self.cardinals_to_coords[moving_dir]
+
 
 class WaypointedFerry:
-    """ Class to handle Ferry and Waypoint positions"""
+    """ Class to handle ferry and waypoint positions"""
+
     def __init__(self, coords, wcoords):
         self.coords = coords
         self.wcoords = wcoords
+        self.cardinals_to_coords = {
+            'N': np.array([0, 1]),
+            'W': np.array([-1, 0]),
+            'S': np.array([0, -1]),
+            'E': np.array([1, 0])
+        }
 
-    def update_ferry(self,data):
+    def update_ferry(self, data):
         action = data[0]
         value = int(data[1:])
-        if action == 'L' or action =='R':
+        if action == 'L' or action == 'R':
             if action == 'R':
-                value = (360 - value) % 360 #turn into acw rotation
+                value = (360 - value) % 360  # turn into acw rotation
             if value == 90:
-                self.wcoords = np.array([-self.wcoords[1],self.wcoords[0]])
+                self.wcoords = np.array([-self.wcoords[1], self.wcoords[0]])
             elif value == 180:
                 self.wcoords = np.array([-self.wcoords[0], -self.wcoords[1]])
             elif value == 270:
@@ -48,49 +68,33 @@ class WaypointedFerry:
         elif action == 'F':
             self.coords += value * self.wcoords
         else:
-            self.wcoords += value * cardinals_to_coords[action]
-        print(self.coords)
-        print(self.wcoords)
+            self.wcoords += value * self.cardinals_to_coords[action]
 
 
-def part_1(sequence):
-
-    #sequence = ['F10', 'N3', 'F7', 'R90', 'F11']
+def rainrisk_part_1(sequence):
     ferry = Ferry(np.array([0, 0]), 0)
 
     for instruction in sequence:
         ferry.update_ferry(instruction)
 
-    distance = abs(ferry.coords[0])+abs(ferry.coords[1])
-    print(distance)
+    distance = abs(ferry.coords[0]) + abs(ferry.coords[1])
+    return distance
 
-def part_2(sequence):
-    #sequence = ['F10', 'N3', 'F7', 'R90', 'F11']
-    ferry = WaypointedFerry(np.array([0,0]), np.array([10,1]))
+
+def rainrisk_part_2(sequence):
+    ferry = WaypointedFerry(np.array([0, 0]), np.array([10, 1]))
 
     for instruction in sequence:
         ferry.update_ferry(instruction)
 
     distance = abs(ferry.coords[0]) + abs(ferry.coords[1])
-    print(distance)
-
+    return(distance)
 
 
 def main():
-    global cardinals_to_coords
-    cardinals_to_coords = {
-        'N': np.array([0, 1]),
-        'W': np.array([-1, 0]),
-        'S': np.array([0, -1]),
-        'E': np.array([1, 0]),
-        90: np.array([0, 1]),
-        180: np.array([-1, 0]),
-        270: np.array([0, -1]),
-        0: np.array([1, 0])
-    }
     sequence = read_input("../input.txt")
-    part_1(sequence)
-    part_2(sequence)
+    rainrisk_part_1(sequence)
+    rainrisk_part_2(sequence)
 
 
 if __name__ == "__main__":
