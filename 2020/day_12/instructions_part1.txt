@@ -31,3 +31,5 @@ F11 would move the ship 11 units south to east 17, south 8.
 At the end of these instructions, the ship's Manhattan distance (sum of the absolute values of its east/west position and its north/south position) from its starting position is 17 + 8 = 25.
 
 Figure out where the navigation instructions lead. What is the Manhattan distance between that location and the ship's starting position?
+
+Your puzzle answer was 1603.

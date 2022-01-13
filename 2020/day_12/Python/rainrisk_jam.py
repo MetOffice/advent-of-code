@@ -1,4 +1,3 @@
-from typing import List
 import math
 import sys
 sys.path.append("./2020/common")
