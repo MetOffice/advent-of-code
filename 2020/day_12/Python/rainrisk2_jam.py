@@ -1,6 +1,4 @@
 import math
-import sys
-sys.path.append("./2020/common")
 from loaders import load_string
 
 def manhattan_distance(directions):
