@@ -143,4 +143,6 @@ dmypy.json
 
 # vim stuff
 *.swp
-.vscode/settings.json
+
+# vscode stuff
+.vscode/
