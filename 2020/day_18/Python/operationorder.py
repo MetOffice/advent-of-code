@@ -1,6 +1,3 @@
-import email
-from re import sub
-
 
 def load_string():
     with open("./2020/day_18/input.txt", "r") as file:
