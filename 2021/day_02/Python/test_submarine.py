@@ -1,4 +1,4 @@
-from calculate import Submarine
+from submarine import Submarine
 import pytest
 
 
@@ -18,6 +18,13 @@ def test_execute_course():
     sub = Submarine()
     sub.execute_course(SAMPLE_COMMANDS)
     assert sub.depth * sub.horizontal_position == expected
+
+def test_aimed_execute_course():
+    expected =900
+    sub = Submarine()
+    sub.aimed_execute_course(SAMPLE_COMMANDS)
+    assert sub.depth * sub.horizontal_position == expected
+
 
 @pytest.mark.parametrize(
     ("command","depth","horizontal_position","expected_depth", "expected_horizontal_position"),
