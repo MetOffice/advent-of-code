@@ -1,70 +1,38 @@
-from collections import deque
-from typing import List
-
-from toolz import sliding_window
-
 from common import loaders, timers
 
-def count_depth_position(depths: List[int]) -> int:
-   """
-   Take a list of commands and calculate the new depth position.
-   
-   """
+class Submarine:
+    def __init__(self, depth=0, horizontal_position=0):
 
-def count_horizontal_position(depths: List[int]) -> int:
-   """
-   Take a list of commands and calculate the new horizontal position
+        self.depth = depth
+        self.horizontal_position = horizontal_position
 
+    def move(self, command):
+        direction, value = command.split()
+        value = int(value)
 
+        if direction == "forward":
+            self.horizontal_position += value
+        elif direction == "down":
+            self.depth += value
+        elif direction == "up":
+            self.depth -= value
+        else:
+            raise ValueError("Santa has been on the run again (i.e. no acceptable movement command)")
 
-@timers.print_duration
-def count_depth_increases(depths: List[int]) -> int:
-    """
-    Take a list of depths and count the number of times it increases between
-    elements. Depth is positive.
-    """
-    count = 0
-    last = depths[0]
-    for next_ in depths[1:]:
-        if next_ > last:
-            count += 1
-        last = next_
-    return count
+    def execute_course(self, commands):
+        for command in commands:
+            self.move(command)
 
 
-@timers.print_duration
-def count_depth_increases_zip(depths: List[int]) -> int:
-    """
-    Take a list of depths and count the number of times it increases between
-    elements. Depth is positive.
-    """
-    pairs = zip(depths, depths[1:])
-    return sum((1 if b > a else 0 for a, b in pairs))
 
-
-def smooth_depths(depths: List[int]) -> List[int]:
-    smoothed_depths = []
-    window = deque(depths[:2], maxlen=3)
-    for depth in depths[2:]:
-        window.append(depth)
-        smoothed_depths.append(sum(window))
-    return smoothed_depths
-
-
-def smooth_depths_toolz(depths: List[int]) -> List[int]:
-    return list(map(sum, sliding_window(3, depths)))
-
-
-def count_depth_increases_smoothed(depths: List[int]) -> int:
-    smoothed_depths = smooth_depths(depths)
-    return count_depth_increases(smoothed_depths)
 
 
 if __name__ == "__main__":
-    depths = loaders.load_ints()
-    answer1 = count_depth_increases(depths)
-    answer1b = count_depth_increases_zip(depths)
-    print(f"Part 1 answer: {answer1}")
+    commands = loaders.load_string()
 
-    answer2 = count_depth_increases_smoothed(depths)
-    print(f"Part 2 answer: {answer2}")
+    sub = Submarine()
+    sub.execute_course(commands)
+
+    answer_part1 = sub.depth * sub.horizontal_position
+
+    print(answer_part1)
