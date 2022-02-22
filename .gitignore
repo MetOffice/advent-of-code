@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# fortran
+*.mod
+*.out
+
 # Distribution / packaging
 .Python
 build/
@@ -137,6 +141,7 @@ dmypy.json
 # IDE related things
 # pycharm
 .idea
+.history
 
 # emacs stuff
 *~
