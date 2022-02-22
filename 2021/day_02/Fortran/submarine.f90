@@ -31,5 +31,9 @@ PROGRAM submarine_prog
 
     WRITE(6, *) "Result is :", sub % depth * sub % horizontal_position
 
+    sub = Submarine()
+    CALL sub % aimed_execute_course(commands, values)
+
+    WRITE(6, *) "Part 2 Result is :", sub % depth * sub % horizontal_position
 
 END PROGRAM submarine_prog
