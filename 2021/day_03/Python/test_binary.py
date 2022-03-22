@@ -3,6 +3,8 @@ from binary import (
     find_least_common_bit,
     get_gamma_rate,
     get_epsilon_rate,
+    find_oxygen_rating,
+    find_co2_rating
 )
 import pytest
 
@@ -53,5 +55,19 @@ def test_get_epsilon_rate():
     actual = get_epsilon_rate(input_strings)
 
     expected = 9
+
+    assert actual == expected
+
+def test_find_oxygen_rating():
+    actual = find_oxygen_rating(input_strings)
+    
+    expected = 23
+
+    assert actual == expected
+
+def test_find_co2_rating():
+    actual = find_co2_rating(input_strings)
+    
+    expected = 10
 
     assert actual == expected
