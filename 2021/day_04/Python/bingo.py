@@ -40,7 +40,7 @@ class Board:
             raise ValueError("No bingo")
         score = 0
         for number, mark in zip(self.numbers, self.marks):
-            if mark:
+            if not mark:
                 score += number
         return score * final_call
 
