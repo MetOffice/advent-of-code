@@ -14,7 +14,7 @@ class Board:
         self.bingo = False
 
     def check_bingo(self, row: int, col: int) -> bool:
-        whole_row = self.marks[row * self.column_count : (row + 1) * self.column_count]
+        whole_row = self.marks[row * self.column_count: (row + 1) * self.column_count]
         whole_col = self.marks[col::self.row_count]
         if all(whole_row) or all(whole_col):
             self.bingo = True
@@ -40,9 +40,10 @@ class Board:
             raise ValueError("No bingo")
         score = 0
         for number, mark in zip(self.numbers, self.marks):
-            if mark:
+            if not mark:
                 score += number
         return score * final_call
+
 
 def find_winner(calls: List[int], boards: List[Board]) -> Tuple[Board, int]:
     for call in calls:
@@ -62,6 +63,7 @@ def load_input(path: str) -> Tuple[List[int], List[Board]]:
     boards = [Board.from_text(block) for block in board_blocks]
 
     return calls, boards
+
 
 if __name__ == "__main__":
     calls, boards = load_input("input.txt")
