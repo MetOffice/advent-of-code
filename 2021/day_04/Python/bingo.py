@@ -53,6 +53,7 @@ def find_winner(calls: List[int], boards: List[Board]) -> Tuple[Board, int]:
                 return board, call
     raise ValueError("No winner")
 
+
 def load_input(path: str) -> Tuple[List[int], List[Board]]:
     filepath = os.path.join(os.path.dirname(__main__.__file__), "..", path)
     with open(filepath) as f:
@@ -69,4 +70,15 @@ if __name__ == "__main__":
     calls, boards = load_input("input.txt")
     winning_board, final_call = find_winner(calls, boards)
     final_score = winning_board.score(final_call)
-    print(final_score)
+    print(f"part1 final_score {final_score}")
+
+    boards.pop(boards.index(winning_board))
+    while len(boards) > 1:
+        winning_board, final_call = find_winner(calls, boards)
+        boards.pop(boards.index(winning_board))
+
+    final_board, final_call = find_winner(calls, boards)
+    final_score = final_board.score(final_call)
+    print(f"part2 final_score {final_score}")
+
+
