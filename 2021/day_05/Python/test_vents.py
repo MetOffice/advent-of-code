@@ -1,4 +1,5 @@
 from vents import input_vents_parser, filter_vents, create_map, calculate_overlap_points
+from collections import Counter
 
 def test_input_vents_parser():
     # x1, y1 -> x2, y2
@@ -8,8 +9,8 @@ def test_input_vents_parser():
     expected = ((0, 5), (9, 9))
     output = input_vents_parser(input_str)
 
-
     assert expected == output
+
 
 def test_filter_vents():
     input_list = ['0,9 -> 5,9',
@@ -33,3 +34,24 @@ def test_filter_vents():
     assert expected == output
 
 
+def test_create_map():
+    input = [((0, 5), (9, 9)), ((9, 3), (4, 4)), ((2, 2), (2, 1)), ((7, 7), (0, 4)), ((0, 2), (9, 9)), ((3, 1), (4, 4))]
+
+    expected = Counter({(0, 9): 2, (1, 9): 2, (2, 9): 2, (7, 4): 2, (3, 4): 2,
+                        (3, 9): 1, (4, 9): 1, (5, 9): 1, (9, 4): 1, (8, 4): 1,
+                        (6, 4): 1, (5, 4): 1, (4, 4): 1, (2, 2): 1, (2, 1): 1,
+                        (7, 0): 1, (7, 1): 1, (7, 2): 1, (7, 3): 1, (2, 4): 1, (1, 4): 1})
+    output = create_map(input)
+
+    assert expected == output
+
+
+def test_calculate_overlap_points():
+    input = Counter({(0, 9): 2, (1, 9): 2, (2, 9): 2, (7, 4): 2, (3, 4): 2,
+                        (3, 9): 1, (4, 9): 1, (5, 9): 1, (9, 4): 1, (8, 4): 1,
+                        (6, 4): 1, (5, 4): 1, (4, 4): 1, (2, 2): 1, (2, 1): 1,
+                        (7, 0): 1, (7, 1): 1, (7, 2): 1, (7, 3): 1, (2, 4): 1, (1, 4): 1})
+    expected = 5
+
+    output = calculate_overlap_points(input)
+    assert output == expected
