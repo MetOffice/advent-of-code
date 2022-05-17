@@ -8,8 +8,8 @@ def main():
     for vent_location in vent_location_lists:
         vents.append(input_vents_parser(vent_location))
 
-    filtered_vents = filter_vents(vents)
-    map = create_map(filtered_vents)
+    # filtered_vents = filter_vents(vents)
+    map = create_map(vents)
     count = calculate_overlap_points(map)
 
     print(f"There are {count} overlapping points")
@@ -52,7 +52,14 @@ def create_map(filtered_vents):
     for filtered_vent_pair in filtered_vents:
         x_coords = filtered_vent_pair[0]
         y_coords = filtered_vent_pair[1]
-        if x_coords[0] != x_coords[1]:
+        if x_coords[0] != x_coords[1] and y_coords[0] != y_coords[1]:
+            # Have diagonal
+            direction = (x_coords[1] - x_coords[0]) // abs(x_coords[1] - x_coords[0])
+            x_line_coords = range(x_coords[0], x_coords[1] + direction, direction)
+            direction = (y_coords[1] - y_coords[0]) // abs(y_coords[1] - y_coords[0])
+            y_line_coords = range(y_coords[0], y_coords[1] + direction, direction)
+
+        elif x_coords[0] != x_coords[1]:
             direction = (x_coords[1] - x_coords[0]) // abs(x_coords[1] - x_coords[0])
             x_line_coords = range(x_coords[0], x_coords[1] + direction, direction)
             y_line_coords = [y_coords[0]] * len(x_line_coords)
