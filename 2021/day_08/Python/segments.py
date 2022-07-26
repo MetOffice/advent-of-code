@@ -27,7 +27,11 @@ def count_unique_segments(four_digits):
     """
     segment_numbers_for_each_digit = {"1": 2, "4": 4, "7": 3, "8": 7}
 
-    unique_digits = [digit for digit in four_digits if len(digit) in segment_numbers_for_each_digit.values()]
+    unique_digits = [
+        digit
+        for digit in four_digits
+        if len(digit) in segment_numbers_for_each_digit.values()
+    ]
 
     return len(unique_digits)
 
@@ -46,25 +50,38 @@ def main_part_1(display_codes):
 
 
 def find_a():
-    #a is 7 - 1
+    pass
+    # a is 7 - 1
+
 
 def find_b():
-    #b is
+    pass
+    # b is
+
 
 def find_c():
-    #c is missing element of 1 from digits of length 6
+    pass
+    # c is missing element of 1 from digits of length 6
+
 
 def find_d():
-    #d is
+    pass
+    # d is
+
 
 def find_e():
-    #e is
+    pass
+    # e is
+
 
 def find_f():
-    #f is
+    pass
+    # f is
+
 
 def find_g():
-    #g is
+    pass
+    # g is
 
 
 def main_part_2(display_codes):
@@ -89,19 +106,31 @@ def main_part_2(display_codes):
 
     """
 
-    #VERY DRAFT
+    # VERY DRAFT
 
-    segment_numbers_for_each_digit = {"1": 2, "2": 5, "3": 5, "4": 4, "5": 5, "6": 6, "7": 3, "8": 7, "9": 6, "0": 6}
+    segment_numbers_for_each_digit = {
+        "1": 2,
+        "2": 5,
+        "3": 5,
+        "4": 4,
+        "5": 5,
+        "6": 6,
+        "7": 3,
+        "8": 7,
+        "9": 6,
+        "0": 6,
+    }
 
-    #Will need loop later
+    # Will need loop later
     definition, four_digits = parse_display_code(display_code)
 
-    #1 is only definition with 2 elements
-    #7 is only definition with 3 elements
-    #4 is only definition with 4 elements
-    #8 is only definition with 7 elements
+    # 1 is only definition with 2 elements
+    # 7 is only definition with 3 elements
+    # 4 is only definition with 4 elements
+    # 8 is only definition with 7 elements
 
     decoding_definitions = set([char for char in definition])
+
 
 if __name__ == "__main__":
     display_codes = load_string()
