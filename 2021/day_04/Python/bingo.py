@@ -14,7 +14,7 @@ class Board:
         self.bingo = False
 
     def check_bingo(self, row: int, col: int) -> bool:
-        whole_row = self.marks[row * self.column_count : (row + 1) * self.column_count]
+        whole_row = self.marks[row * self.column_count: (row + 1) * self.column_count]
         whole_col = self.marks[col::self.row_count]
         if all(whole_row) or all(whole_col):
             self.bingo = True
@@ -44,6 +44,7 @@ class Board:
                 score += number
         return score * final_call
 
+
 def find_winner(calls: List[int], boards: List[Board]) -> Tuple[Board, int]:
     for call in calls:
         for board in boards:
@@ -51,6 +52,7 @@ def find_winner(calls: List[int], boards: List[Board]) -> Tuple[Board, int]:
             if board.bingo:
                 return board, call
     raise ValueError("No winner")
+
 
 def load_input(path: str) -> Tuple[List[int], List[Board]]:
     filepath = os.path.join(os.path.dirname(__main__.__file__), "..", path)
@@ -63,8 +65,20 @@ def load_input(path: str) -> Tuple[List[int], List[Board]]:
 
     return calls, boards
 
+
 if __name__ == "__main__":
     calls, boards = load_input("input.txt")
     winning_board, final_call = find_winner(calls, boards)
     final_score = winning_board.score(final_call)
-    print(final_score)
+    print(f"part1 final_score {final_score}")
+
+    boards.pop(boards.index(winning_board))
+    while len(boards) > 1:
+        winning_board, final_call = find_winner(calls, boards)
+        boards.pop(boards.index(winning_board))
+
+    final_board, final_call = find_winner(calls, boards)
+    final_score = final_board.score(final_call)
+    print(f"part2 final_score {final_score}")
+
+
