@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from xml.dom.minidom import Identified
 import numpy as np
 
 def string2array(string:str):
@@ -71,8 +72,13 @@ class IdentifyingInformation():
     has_b : bool
     has_e : bool
     has_f : bool
+    has_ac : bool
+    has_dg : bool
 
 def sum_values(input):
+    """
+    Reads the input and returns the sum of all numbers in it
+    """
     total = 0
 
     for line in input:
@@ -92,23 +98,30 @@ def identify_digits(sample:np.ndarray):
     print(np.sum(sample, axis=1))
 
     # these are segments with unique counts of appearances within the digits
-    b_idx, e_idx, f_idx = bef_indices(sample)
+    b_idx, e_idx, f_idx, ac_idx, ca_idx, dg_idx, gd_idx = letter_indices(sample)
 
     
 
     return identity_map
 
-def bef_indices(sample):
+def letter_indices(sample):
     """
-    Get the indices of the b, e and f segments
-    These are the ones with unique counts
+    Get the indices of the different segments.
+    b, e and f are unique, a-c and d-g are shared
     """
     segment_counts = np.sum(sample, axis=0)
     b_idx = np.nonzero(segment_counts == 6)[0][0]
     e_idx = np.nonzero(segment_counts == 4)[0][0]
     f_idx = np.nonzero(segment_counts == 9)[0][0]
 
-    return b_idx, e_idx, f_idx
+    ac_idx = np.nonzero(segment_counts == 8)[0][0]
+    ca_idx = np.nonzero(segment_counts == 8)[1][0]
+
+    dg_idx = np.nonzero(segment_counts == 7)[0][0]
+    gd_idx = np.nonzero(segment_counts == 7)[1][0]
+
+
+    return b_idx, e_idx, f_idx, ac_idx, ca_idx, dg_idx, gd_idx
 
 
 
