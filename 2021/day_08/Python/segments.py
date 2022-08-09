@@ -1,8 +1,8 @@
+from typing import Dict, List, Set, Tuple
 from common.loaders import load_string
-import numpy as np
 
 
-def parse_display_code(display_code):
+def parse_display_code(display_code: str) -> Tuple[List[Set[str]], List[str]]:
     """
 
     Parameters
@@ -17,14 +17,12 @@ def parse_display_code(display_code):
     definition_string, four_digits_string = display_code.split("|")
 
     four_digits = four_digits_string.split()
-    definition = definition_string.split()
+    definition = [set(string) for string in definition_string.split()]
 
     return definition, four_digits
 
 
 def count_unique_segments(four_digits):
-    """
-    """
     segment_numbers_for_each_digit = {"1": 2, "4": 4, "7": 3, "8": 7}
 
     unique_digits = [
@@ -80,7 +78,7 @@ def find_g(intersection_5s, known_letters):
     return find_segment_by_difference(intersection_5s, set(known_letters.values()))
 
 
-def main_part_2(display_codes):
+def main_part_2(display_codes: List[str]):
     """
       0:      1:      2:      3:      4:
      aaaa    ....    aaaa    aaaa    ....
@@ -106,7 +104,6 @@ def main_part_2(display_codes):
     for display_code in display_codes:
         definition, four_digits = parse_display_code(display_code)
 
-        definition = set(definition)
         # 1 is only definition with 2 elements
         # 7 is only definition with 3 elements
         # 4 is only definition with 4 elements
@@ -156,8 +153,16 @@ def main_part_2(display_codes):
         known_nos[6] = remap_to_rand_segment_labels(S6, known_letters)
         known_nos[9] = remap_to_rand_segment_labels(S9, known_letters)
 
-        # TODO: Fix this?
-        total += ?
+        def lookup_digit(digit: Set[str]):
+            matches = [
+                num for num, ref_digit in known_nos.items() if digit == ref_digit
+            ]
+            if len(matches) != 1:
+                raise ValueError
+            return matches[0]
+
+        total += int("".join([str(lookup_digit(set(digit))) for digit in four_digits]))
+    return total
 
 
 def find_segment_by_difference(A, B):
@@ -168,7 +173,7 @@ def find_segment_by_intersection(A, B):
     return (A & B).pop()
 
 
-def get_intersection_of_list(list_of_sets):
+def get_intersection_of_list(list_of_sets: List[Set[str]]):
     set_intersection = list_of_sets[0].copy()
     for next_set in list_of_sets[1:]:
         set_intersection &= next_set
@@ -179,7 +184,7 @@ def filt_list_by_size(full_list, size):
     return [x for x in full_list if len(x) == size]
 
 
-def get_one_number(parent_list, size):
+def get_one_number(parent_list: List[Set[str]], size):
     sub_list = filt_list_by_size(parent_list, size)
     if len(sub_list) != 1:
         raise ValueError(
@@ -217,3 +222,6 @@ if __name__ == "__main__":
     count = main_part_1(display_codes)
 
     print(f"Part 1: {count}")
+
+    answer = main_part_2(display_codes)
+    print(f"Part 2: {answer}")
