@@ -148,3 +148,6 @@ dmypy.json
 
 # vim stuff
 *.swp
+
+# vscode stuff
+.vscode
