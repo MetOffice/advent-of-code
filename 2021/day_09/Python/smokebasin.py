@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
 def load_input(input_file="../input.txt"):
     """
@@ -46,7 +45,7 @@ def find_low_coords(low_points):
     return np.array(low_coords).T
 
 def find_basins(input, low_coords):
-    basin_map = np.zeros(input.shape)
+    basin_map = np.zeros(input.shape, dtype=int)
 
     for colour, coords in enumerate(low_coords):
         flood_fill(tuple(coords), colour + 1, input, basin_map)
