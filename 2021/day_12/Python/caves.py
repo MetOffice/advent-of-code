@@ -58,8 +58,9 @@ def is_navigable_to(path, there):
     elif there not in path:
         return True
     elif there.islower():
-        # if we've not been anywhere twice, its cool!
-        if len(set(path)) == len(path):
+        # if we've not been to any small cave before, its cool!
+        small_caves_visited = [cave for cave in path if not is_big_cave(cave)]
+        if len(set(small_caves_visited)) == len(small_caves_visited):
             return True
         else:
             return False
@@ -72,7 +73,6 @@ def pathfind_2(caves, path):
     here = path[-1]
 
     if here == end_cave:
-        print(path)
         return 1
 
     possible_places_to_go = [cave for cave in caves[here] if is_navigable_to(path, cave)]
