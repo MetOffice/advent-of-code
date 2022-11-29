@@ -1,6 +1,6 @@
 from common import loaders
 from itertools import tee
-from collections import Counter
+from collections import Counter, defaultdict
 
 # TODO:
 
@@ -61,6 +61,57 @@ def apply_rules(polymer, insertion_rules):
     return new_polymer
 
 
+def apply_rules_better(polymer, insertion_rules, count):
+    """
+    A more performant apply rules So we don't kill the computer.
+    Parameters
+    ----------
+    polymer
+    insertion_rules
+    count
+
+    Returns
+    -------
+
+    """
+    # rejig the rules to be "AB": ("AC" "CB)"
+    new_rules = {key: (f"{key[0]}{item}", f"{item}{key[1]}") for key, item in insertion_rules.items()}
+
+    # set up the initial dictionary
+    # keys are polymer pairs and values are the number of times we have seen that pair
+    pairs_dict = defaultdict(int)
+    pairs = pairwise(polymer)
+    for pair in pairs:
+        pairs_dict["".join(pair)] += 1
+
+    for counter in range(count):
+        pairs_dict = create_new_polymer(pairs_dict, new_rules)
+
+    return pairs_dict
+
+
+def create_new_polymer(polymer, rules):
+    new_polymer = defaultdict(int)
+    for key, value in polymer.items():
+        for element in rules[key]:
+            new_polymer[element] += value
+    return new_polymer
+
+
+def count_letters_better(original_polymer, polymer_dict):
+    count_dict = defaultdict(int)
+    # add the final letter on, as the counting will ignore them
+    count_dict[original_polymer[-1]] += 1
+
+    for key in polymer_dict:
+        count_dict[key[0]] += polymer_dict[key]
+
+    max_val = max(count_dict.values())
+    min_val = min(count_dict.values())
+
+    return max_val, min_val
+
+
 def multiple_apply_rules(start, rules, number):
     result = start
     for i in range(0, number):
@@ -86,9 +137,21 @@ if __name__ == "__main__":
     result_part1 = multiple_apply_rules(start, rules, 10)
     most, least = count_letters(result_part1)
 
-    print(f"Answer part 1: {most[1] - least[1]}")
+    print(f"Answer part 1 - old: {most[1] - least[1]}")
 
-    result_part2 = multiple_apply_rules(start, rules, 40)
-    most, least = count_letters(result_part2)
+    # result_part2 = multiple_apply_rules(start, rules, 40)
+    # most, least = count_letters(result_part2)
+    #
+    # print(f"Answer part 2: {most[1] - least[1]}")
 
-    print(f"Answer part 2: {most[1] - least[1]}")
+    polymer_dict = apply_rules_better(start, rules, 10)
+    most, least = count_letters_better(start, polymer_dict)
+
+    print(f"Answer part 1 - new: {most - least}")
+
+    polymer_dict = apply_rules_better(start, rules, 40)
+    most, least = count_letters_better(start, polymer_dict)
+
+    print(f"Answer part 2 - new: {most - least}")
+
+
