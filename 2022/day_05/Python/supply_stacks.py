@@ -1,7 +1,3 @@
-# TODO:
-# 1. read in the file, split it at the blank line and then handle the crates
-# 2. move the crates according to instructions
-from common.loaders import load_string
 import os
 import __main__
 
