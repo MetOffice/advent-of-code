@@ -63,6 +63,8 @@ class Directory(Node):
         self.size()
 
     def get_child(self, name):
+        if self.name == name:
+            return self
         for child_name, child in self.children.items():
             if child_name == name:
                 target = child
@@ -70,8 +72,11 @@ class Directory(Node):
             else:
                 if isinstance(child, Directory):
                     target = child.get_child(name)
-                    return target
-        return None
+                    if target is not None:
+                        return target
+                    else:
+                        continue
+
     
     def pretty_print(self, indent=0):
         print("  " * indent + str(self))
