@@ -1,6 +1,7 @@
 import abc
 from abc import ABC
 
+
 class Node(ABC):
     """
     A single node in a filetree
@@ -8,6 +9,7 @@ class Node(ABC):
     def __init__(self, name) -> None:
         self.name = name
         self.parent = None
+        self._size = None
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -27,10 +29,10 @@ class File(Node):
     """
     def __init__(self, size, name) -> None:
         super().__init__(name)
-        self._size = size
+        self._size = int(size)
 
     def __str__(self) -> str:
-        return f"- {self.name} (file, size={self.size()})"
+        return f"- {self.name} (file)"
 
     def size(self):
         return self._size
@@ -46,19 +48,30 @@ class Directory(Node):
     def __init__(self, name) -> None:
         super().__init__(name)
         self.children = {}
+        self._size = None
 
     def __str__(self) -> str:
-        return f"- {self.name} (dir)"
+        return f"- {self.name} (dir, size={self.size()})"
 
     def size(self):
-        return sum([child.size() for child in self.children])
+        self._size = sum([child[1].size() for child in self.children.items()])
+        return self._size
     
-    def add_child(self, child:Node):
+    def add_child(self, child: Node):
         self.children[child.name] = child
         child.parent = self
+        self.size()
 
     def get_child(self, name):
-        return self.children[name]
+        for child_name, child in self.children.items():
+            if child_name == name:
+                target = child
+                return target
+            else:
+                if isinstance(child, Directory):
+                    target = child.get_child(name)
+                    return target
+        return None
     
     def pretty_print(self, indent=0):
         print("  " * indent + str(self))
@@ -75,7 +88,7 @@ class TreeBuilder:
         self.cwd = None
 
     @staticmethod
-    def build(path="../input.txt"):
+    def build(path):
         builder = TreeBuilder()
         input_string = builder.load_txt(path)
         commands = builder.get_commands(input_string)
@@ -83,21 +96,23 @@ class TreeBuilder:
             builder.execute_command(command)
         return builder.root
 
-    def load_txt(self, path="../input.txt"):
+    @staticmethod
+    def load_txt(path):
         """
         Reads the file at path as a single string
         """
         with open(path) as file:
             return file.read()
         
-    def get_commands(self, input_string:str):
+    @staticmethod
+    def get_commands(input_string: str):
         """
         Extract a list of commands from an input string
         """
         commands = input_string.split("$")
         return [command.strip() for command in commands if command]
 
-    def execute_command(self, command:str):
+    def execute_command(self, command: str):
         """
         Executes a single command from a string
         """
@@ -127,7 +142,7 @@ class TreeBuilder:
 
     def execute_ls(self, content_list):
         """
-        Execute an ls command, populating hte cwd with the content_list.
+        Execute ls command, populating hte cwd with the content_list.
         content_list is alternately filesize/dir and names.
         """
         # Interpret as a list of (dir/size, name)
@@ -143,6 +158,7 @@ class TreeBuilder:
 def main():
     tree = TreeBuilder.build("../test_input.txt")
     tree.pretty_print()
+
 
 if __name__ == "__main__":
     main()
