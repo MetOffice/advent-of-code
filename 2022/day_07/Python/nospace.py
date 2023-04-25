@@ -9,7 +9,6 @@ class Node(ABC):
     def __init__(self, name) -> None:
         self.name = name
         self.parent = None
-        self._size = None
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -32,7 +31,7 @@ class File(Node):
         self._size = int(size)
 
     def __str__(self) -> str:
-        return f"- {self.name} (file)"
+        return f"- {self.name} (file, size={self.size()})"
 
     def size(self):
         return self._size
@@ -48,35 +47,34 @@ class Directory(Node):
     def __init__(self, name) -> None:
         super().__init__(name)
         self.children = {}
-        self._size = None
 
     def __str__(self) -> str:
         return f"- {self.name} (dir, size={self.size()})"
 
     def size(self):
-        self._size = sum([child[1].size() for child in self.children.items()])
-        return self._size
+        return sum([child.size() for child in self.children.values()])
     
     def add_child(self, child: Node):
         self.children[child.name] = child
         child.parent = self
-        self.size()
 
     def get_child(self, name):
-        for child_name, child in self.children.items():
-            if child_name == name:
-                target = child
-                return target
-            else:
-                if isinstance(child, Directory):
-                    target = child.get_child(name)
-                    return target
-        return None
+        return self.children[name]
     
     def pretty_print(self, indent=0):
         print("  " * indent + str(self))
         for child in self.children.values():
             child.pretty_print(indent=indent + 1)
+
+    def get_all_dirs(self):
+        """
+        Returns an iterator of all subdirectories, including itself
+        """
+        yield self
+        for child in self.children.values():
+            if isinstance(child, Directory):
+                for dir in child.get_all_dirs():
+                    yield dir
     
     
 class TreeBuilder:
@@ -155,9 +153,35 @@ class TreeBuilder:
                     self.cwd.add_child(File(content, name))
 
 
+def part1(tree:Directory):
+    """
+    Find the total size of all directories smaller than 100,000
+    """
+    return sum([dir.size() for dir in tree.get_all_dirs() if dir.size() <= 100000])
+
+def part2(tree:Directory):
+    """
+    Find the size of the smallest directory that would, if deleted, free up enough space
+    """
+    space_total = 7e7
+    space_needed = 3e7
+    space_used = tree.size()
+    space_spare = space_total - space_used
+    minimal_deletion = space_needed - space_spare
+
+    best_deletion = space_total
+    for dir in tree.get_all_dirs():
+        if minimal_deletion <= dir.size() < best_deletion:
+            best_deletion = dir.size()
+
+    return best_deletion
+
 def main():
-    tree = TreeBuilder.build("../test_input.txt")
+    tree = TreeBuilder.build("../input.txt")
     tree.pretty_print()
+
+    print(f"Part 1 solution: {part1(tree)}")
+    print(f"Part 2 solution: {part2(tree)}")
 
 
 if __name__ == "__main__":
