@@ -34,6 +34,7 @@ class Tail(Knot):
         self.head = head
         head.follow_call = self.woggle
         self.trail = set()
+        self.trail.add(tuple(self.position))
 
     def woggle(self):
         head_tail_vector = self.head.position - self.position 
@@ -54,12 +55,21 @@ def read_instructions():
             instructions += (direction*int(distance))
     return instructions
 
+def make_rope(rope_length):
+    head = Head()
+    last_tail_which_is_also_now_a_head_i_guess = head
+    for i in range(rope_length -1):
+        last_tail_which_is_also_now_a_head_i_guess = Tail(last_tail_which_is_also_now_a_head_i_guess)
+    return head, last_tail_which_is_also_now_a_head_i_guess
+
 def main():
     instructions = read_instructions()
-    head = Head()
-    tail = Tail(head)
+    head,tail = make_rope(10)
     head.wiggle_loop(instructions)
     print(tail.return_trail())
+    
+
+
 
 if __name__=="__main__":
     main()
