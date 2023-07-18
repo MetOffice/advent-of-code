@@ -55,11 +55,32 @@ class CPU:
         self.x += int(arg)
 
 
-def x_at_cycles(instruction_set, output_cycles:list):
+def x_at_cycle(instruction_set, output_cycle: int) -> tuple[int, int]:
+    """
+    For a single cycle of interest, execute the program until the cycle is reached.
+    If an add occurs over the boundary we stop at output_cycle+1, then take the previous value of x
+    As the add would not have completed at output_cycle.
+    Line #160/161 of the test is causing an issue (addx 2, addx 1) at cycle 216/218
+    This could be adapted to only require one pass for all the output cycles required (but let's get this working first!)
+    :param instruction_set:
+    :param output_cycle:
+    :return:
+    """
+    cpu = CPU(instruction_set)
+    x_old = cpu.x
+    for cycle, x in cpu.execute_program():
+        if cycle == output_cycle:
+            return cycle, x
+        elif cycle == output_cycle + 1:
+            return (cycle - 1), x_old
+        x_old = x
+    raise Exception("Unreachable")
+
+
+def x_at_cycles(instruction_set, output_cycles: list[int]) -> list[int]:
     """
     For a list of cycles of interest, output the
     values at those cycles
     """
-    cpu = CPU(instruction_set)
-    for cycle, x in cpu.execute_program():
-        
+    result = [x_at_cycle(instruction_set, val) for val in output_cycles]
+    return [a * b for a, b in result]

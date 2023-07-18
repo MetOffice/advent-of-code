@@ -1,5 +1,7 @@
-import crt
+import textwrap
 import pytest
+
+import crt
 
 @pytest.mark.parametrize("cycle_number,x_value", [(0,  1),
                                                   (1,  1),
@@ -8,15 +10,15 @@ import pytest
                                                   (4,  4),
                                                   (5, -1)])
 def test_small_program(cycle_number, x_value):
-    small_program = \
+    small_program = textwrap.dedent(
     """
         noop
         addx 3
         addx -5
-    """
+    """).strip()
 
-    assert x_at_cycle(cycle_number) == x_value
-
+    result = crt.x_at_cycle(small_program, cycle_number)
+    assert result == (cycle_number, x_value)
 
 @pytest.mark.parametrize("cycle_number,x_value", [( 20, 21),
                                                   ( 60, 19),
@@ -25,7 +27,8 @@ def test_small_program(cycle_number, x_value):
                                                   (180, 16),
                                                   (220, 18)])
 def test_large_program(cycle_number, x_value):
-    small_program = \
+    # Cycle 218 is an addx 1, value
+    small_program = textwrap.dedent(
     """
         addx 15
         addx -11
@@ -173,6 +176,7 @@ def test_large_program(cycle_number, x_value):
         noop
         noop
         noop
-    """
+    """).strip()
 
-    assert x_at_cycle(cycle_number) == x_value
+    result = crt.x_at_cycle(small_program, cycle_number)
+    assert result == (cycle_number, x_value)
