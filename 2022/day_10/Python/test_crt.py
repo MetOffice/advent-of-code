@@ -184,3 +184,7 @@ def test_signal_strength():
     cycles = [20,60,100,140,180,220]
     result = crt.signal_strength(large_program, cycles)
     assert result == 13140
+
+def test_part2():
+    print(crt.pixels_to_string(crt.calculate_pixel_values(large_program)))
+    assert 1 == 1

@@ -1,4 +1,3 @@
-
 class CPU:
     def __init__(self, instruction_set) -> None:
         self.instruction_set = instruction_set
@@ -85,5 +84,21 @@ def signal_strength_at_cycles(instruction_set, output_cycles: list[int]) -> list
     result = [x_at_cycle(instruction_set, val) for val in output_cycles]
     return [a * b for a, b in result]
 
+
 def signal_strength(instruction_set, output_cycles: list[int]) -> int:
     return sum(signal_strength_at_cycles(instruction_set, output_cycles))
+
+
+def calculate_pixel_values(instruction_set) -> list[bool]:
+    x_values = [x_at_cycle(instruction_set, val) for val in range(1, 241)]
+    crt_coordinate = [c % 40 for c in range(240)]
+    return [-1 <= (x[1] - c) <= 1 for x, c in zip(x_values, crt_coordinate)]
+
+def pixels_to_string(pixels: list[bool]) -> str:
+    result = ""
+    for i, pixel in enumerate(pixels):
+        result+= "#" if pixel else "."
+        if i % 40 == 0:
+            result+="\n"
+    return result
+
