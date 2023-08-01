@@ -9,7 +9,8 @@ class CPU:
         """
         Resets cycle number and x value to initial
         """
-        self.cycle = 0
+        # Cycle starts at 1 to account for difference between the end and middle of cycles in adds.
+        self.cycle = 1
         self.x = 1
 
 
@@ -77,10 +78,12 @@ def x_at_cycle(instruction_set, output_cycle: int) -> tuple[int, int]:
     raise Exception("Unreachable")
 
 
-def x_at_cycles(instruction_set, output_cycles: list[int]) -> list[int]:
+def signal_strength_at_cycles(instruction_set, output_cycles: list[int]) -> list[int]:
     """
-    For a list of cycles of interest, output the
-    values at those cycles
+    For a list of cycles of interest, calculate the signal strength (x_register * cycle)
     """
     result = [x_at_cycle(instruction_set, val) for val in output_cycles]
     return [a * b for a, b in result]
+
+def signal_strength(instruction_set, output_cycles: list[int]) -> int:
+    return sum(signal_strength_at_cycles(instruction_set, output_cycles))

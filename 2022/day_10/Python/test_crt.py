@@ -3,32 +3,7 @@ import pytest
 
 import crt
 
-@pytest.mark.parametrize("cycle_number,x_value", [(0,  1),
-                                                  (1,  1),
-                                                  (2,  1),
-                                                  (3,  4),
-                                                  (4,  4),
-                                                  (5, -1)])
-def test_small_program(cycle_number, x_value):
-    small_program = textwrap.dedent(
-    """
-        noop
-        addx 3
-        addx -5
-    """).strip()
-
-    result = crt.x_at_cycle(small_program, cycle_number)
-    assert result == (cycle_number, x_value)
-
-@pytest.mark.parametrize("cycle_number,x_value", [( 20, 21),
-                                                  ( 60, 19),
-                                                  (100, 18),
-                                                  (140, 21),
-                                                  (180, 16),
-                                                  (220, 18)])
-def test_large_program(cycle_number, x_value):
-    # Cycle 218 is an addx 1, value
-    small_program = textwrap.dedent(
+large_program = textwrap.dedent(
     """
         addx 15
         addx -11
@@ -178,5 +153,34 @@ def test_large_program(cycle_number, x_value):
         noop
     """).strip()
 
+@pytest.mark.parametrize("cycle_number,x_value", [(0,  1),
+                                                  (1,  1),
+                                                  (2,  1),
+                                                  (3,  4),
+                                                  (4,  4),
+                                                  (5, -1)])
+def test_small_program(cycle_number, x_value):
+    small_program = textwrap.dedent(
+    """
+        noop
+        addx 3
+        addx -5
+    """).strip()
+
     result = crt.x_at_cycle(small_program, cycle_number)
     assert result == (cycle_number, x_value)
+
+@pytest.mark.parametrize("cycle_number,x_value", [( 20, 21),
+                                                  ( 60, 19),
+                                                  (100, 18),
+                                                  (140, 21),
+                                                  (180, 16),
+                                                  (220, 18)])
+def test_large_program(cycle_number, x_value):
+    result = crt.x_at_cycle(large_program, cycle_number)
+    assert result == (cycle_number, x_value)
+
+def test_signal_strength():
+    cycles = [20,60,100,140,180,220]
+    result = crt.signal_strength(large_program, cycles)
+    assert result == 13140
