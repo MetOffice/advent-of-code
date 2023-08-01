@@ -74,7 +74,7 @@ def x_at_cycle(instruction_set, output_cycle: int) -> tuple[int, int]:
         elif cycle == output_cycle + 1:
             return (cycle - 1), x_old
         x_old = x
-    raise Exception("Unreachable")
+    return (cpu.cycle,x_old)
 
 
 def signal_strength_at_cycles(instruction_set, output_cycles: list[int]) -> list[int]:
@@ -95,10 +95,9 @@ def calculate_pixel_values(instruction_set) -> list[bool]:
     return [-1 <= (x[1] - c) <= 1 for x, c in zip(x_values, crt_coordinate)]
 
 def pixels_to_string(pixels: list[bool]) -> str:
-    result = ""
+    result = "\n"
     for i, pixel in enumerate(pixels):
         result+= "#" if pixel else "."
-        if i % 40 == 0:
+        if (i+1) % 40 == 0:
             result+="\n"
     return result
-
