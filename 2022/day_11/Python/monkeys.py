@@ -147,7 +147,7 @@ class Barrel:
         """
         Do n rounds
         """
-        for _ in range(n-1): # Definitely not a bodge...
+        for _ in range(n):
             self.round()
 
     def monkey_business(self):
@@ -163,7 +163,7 @@ def main():
     with open("../input.txt", "r") as file:
         input_file = file.read()
     barrel = Barrel.construct_from_string(input_file)
-    barrel.n_rounds(21)
+    barrel.n_rounds(20)
     print(barrel.monkey_business())
 
 
