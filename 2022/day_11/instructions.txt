@@ -1,9 +1,12 @@
 --- Day 11: Monkey in the Middle ---
-As you finally start making your way upriver, you realize your pack is much lighter than you remember. Just then, one of the items from your pack goes flying overhead. Monkeys are playing Keep Away with your missing things!
+As you finally start making your way upriver, you realize your pack is much lighter than you remember.
+Just then, one of the items from your pack goes flying overhead. Monkeys are playing Keep Away with your missing things!
 
-To get your stuff back, you need to be able to predict where the monkeys will throw your items. After some careful observation, you realize the monkeys operate based on how worried you are about each item.
+To get your stuff back, you need to be able to predict where the monkeys will throw your items.
+After some careful observation, you realize the monkeys operate based on how worried you are about each item.
 
-You take some notes (your puzzle input) on the items each monkey currently has, how worried you are about those items, and how the monkey makes decisions based on your worry level. For example:
+You take some notes (your puzzle input) on the items each monkey currently has, how worried you are about those items,
+and how the monkey makes decisions based on your worry level. For example:
 
 Monkey 0:
   Starting items: 79, 98
@@ -35,7 +38,8 @@ Monkey 3:
 Each monkey has several attributes:
 
 Starting items lists your worry level for each item the monkey is currently holding in the order they will be inspected.
-Operation shows how your worry level changes as that monkey inspects an item. (An operation like new = old * 5 means that your worry level after the monkey inspected the item is five times whatever your worry level was before inspection.)
+Operation shows how your worry level changes as that monkey inspects an item.
+(An operation like new = old * 5 means that your worry level after the monkey inspected the item is five times whatever your worry level was before inspection.)
 Test shows how the monkey uses your worry level to decide where to throw an item next.
 If true shows what happens with an item if the Test was true.
 If false shows what happens with an item if the Test was false.

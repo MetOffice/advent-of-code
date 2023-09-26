@@ -146,15 +146,15 @@ class Monkey:
         self.items = np.append(self.items, item)
 
 
-
 class Barrel:
     """
     A collection of monkeys is called a barrel.
     It deals with throwing and comparisons between monkeys.
     """
 
-    def __init__(self, monkeys: List[Monkey]) -> None:
+    def __init__(self, monkeys: List[Monkey], big_divisor) -> None:
         self.monkeys = monkeys
+        self.big_divisor = big_divisor
 
     @staticmethod
     def construct_from_string(input_string: str) -> "Barrel":
@@ -163,7 +163,10 @@ class Barrel:
         """
         monkey_inputs = input_string.split("\n\n")
         monkeys = [Monkey.construct_from_string(monkey_input) for monkey_input in monkey_inputs]
-        return Barrel(monkeys)
+
+        big_divisor = math.prod([m.test_divisor for m in monkeys])
+
+        return Barrel(monkeys, big_divisor)
 
     def round(self):
         """
@@ -174,6 +177,7 @@ class Barrel:
             passes = monkey.throw_all()
 
             for target, item in passes:
+                item = item % self.big_divisor
                 self.monkeys[target].catch(item)
 
     def n_rounds(self, n):
@@ -198,14 +202,13 @@ class Barrel:
         return "a"
 
 def main():
-    with open("../test_input.txt", "r") as file:
+    with open("../input.txt", "r") as file:
         input_file = file.read()
     barrel = Barrel.construct_from_string(input_file)
-    barrel.n_rounds(20)
+    barrel.n_rounds(10000)
     print(barrel)
     print(barrel.monkey_business())
 
 
 if __name__ == "__main__":
-    # TODO: weirdly have numerical drift after a large number of iterations?
     main()
