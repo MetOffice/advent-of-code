@@ -1,4 +1,3 @@
-
 class CPU:
     def __init__(self, instruction_set) -> None:
         self.instruction_set = instruction_set
@@ -9,7 +8,8 @@ class CPU:
         """
         Resets cycle number and x value to initial
         """
-        self.cycle = 0
+        # Cycle starts at 1 to account for difference between the end and middle of cycles in adds.
+        self.cycle = 1
         self.x = 1
 
 
@@ -55,11 +55,49 @@ class CPU:
         self.x += int(arg)
 
 
-def x_at_cycles(instruction_set, output_cycles:list):
+def x_at_cycle(instruction_set, output_cycle: int) -> tuple[int, int]:
     """
-    For a list of cycles of interest, output the
-    values at those cycles
+    For a single cycle of interest, execute the program until the cycle is reached.
+    If an add occurs over the boundary we stop at output_cycle+1, then take the previous value of x
+    As the add would not have completed at output_cycle.
+    Line #160/161 of the test is causing an issue (addx 2, addx 1) at cycle 216/218
+    This could be adapted to only require one pass for all the output cycles required (but let's get this working first!)
+    :param instruction_set:
+    :param output_cycle:
+    :return:
     """
     cpu = CPU(instruction_set)
+    x_old = cpu.x
     for cycle, x in cpu.execute_program():
-        
+        if cycle == output_cycle:
+            return cycle, x
+        elif cycle == output_cycle + 1:
+            return (cycle - 1), x_old
+        x_old = x
+    return (cpu.cycle,x_old)
+
+
+def signal_strength_at_cycles(instruction_set, output_cycles: list[int]) -> list[int]:
+    """
+    For a list of cycles of interest, calculate the signal strength (x_register * cycle)
+    """
+    result = [x_at_cycle(instruction_set, val) for val in output_cycles]
+    return [a * b for a, b in result]
+
+
+def signal_strength(instruction_set, output_cycles: list[int]) -> int:
+    return sum(signal_strength_at_cycles(instruction_set, output_cycles))
+
+
+def calculate_pixel_values(instruction_set) -> list[bool]:
+    x_values = [x_at_cycle(instruction_set, val) for val in range(1, 241)]
+    crt_coordinate = [c % 40 for c in range(240)]
+    return [-1 <= (x[1] - c) <= 1 for x, c in zip(x_values, crt_coordinate)]
+
+def pixels_to_string(pixels: list[bool]) -> str:
+    result = "\n"
+    for i, pixel in enumerate(pixels):
+        result+= "#" if pixel else "."
+        if (i+1) % 40 == 0:
+            result+="\n"
+    return result
