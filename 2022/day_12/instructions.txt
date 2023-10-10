@@ -14,7 +14,7 @@ To avoid needing to get out your climbing gear, the elevation of the destination
 than the elevation of your current square; that is, if your current elevation is m, you could step to elevation n,
 but not to elevation o. (This also means that the elevation of the destination square can be much lower than the elevation of your current square.)
 
-For example:
+For example: wrgioergirgeoigeigeig
 
 Sabqponm
 abcryxxl
