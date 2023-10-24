@@ -32,10 +32,10 @@ def find_start_end(input_file: [str]) -> tuple[Coordinate,Coordinate]:
 
     for y, line in enumerate(input_file):
         s = line.find("S")
-        if s != -1:
+        if s != - 1:
             start = Coordinate(s,y)
         e = line.find("E")
-        if e != -1:
+        if e != - 1:
             end = Coordinate(e,y)
 
     return start, end
@@ -53,39 +53,55 @@ def get_elevation(s: str) -> int:
             return 1
 
 
-def find_path(input_data: [str], start, end):
+def find_path(input_data: [str], start:Coordinate, end:Coordinate):
+    """
+    Finds paths
+    """
     # lets make our letters be numbers!
     y_extent = len(input_data)
     x_extent = len(input_data[0])
-    number_array = np.zeros([x_extent, y_extent])
+    heights_array = np.zeros([x_extent, y_extent], dtype=int)
     for y, line in enumerate(input_data):
         for x, letter in enumerate(line):
-            number_array[x, y] = get_elevation(letter)
+            heights_array[x, y] = get_elevation(letter)
 
-    # from current point, check the neighbouring (up, down, left, right) which are between 1 and <this value> + 1
-    current_point = start
-    possible_path_points = []
-    for x_point in [current_point.x -1, current_point.x + 1]:
-        if x_point == -1 or x_point == x_extent:
-            pass
-        else:
-            possible_path_points.append(Coordinate(x_point, current_point.y))
+    distances_array = np.ones_like(heights_array) * heights_array.size
+    distances_array[start] = 0
 
-    for y_point in [current_point.y + 1, current_point.y -1]:
-        if y_point == -1 or y_point == y_extent:
-            pass
-        else:
-            possible_path_points.append(Coordinate(current_point.x,y_point))
+    progress_counter = 0
 
-    #for coord in possible_path_points:
-        # now check if these points are 1 <= current elevation <= current_elevation + 1
-        # move current_point accordingly?
+    while(distances_array[end] == heights_array.size):
+        # array of bools of whether we can move this way
+        moves_array = np.abs(heights_array[:, 1:] - heights_array[:,:-1]) <= 1
+        new_distances_array = np.ones_like(distances_array[:, 1:]) * heights_array.size
+        new_distances_array[moves_array] = distances_array[:, 1:][moves_array] + 1
+        distances_array[:,:-1] = np.min((distances_array[:,:-1], new_distances_array), axis=0)
 
-    print("done")
+        moves_array = np.abs(heights_array[:,:-1] - heights_array[:, 1:]) <= 1
+        new_distances_array = np.ones_like(distances_array[:, 1:]) * heights_array.size
+        new_distances_array[moves_array] = distances_array[:,:-1][moves_array] + 1
+        distances_array[:, 1:] = np.min((distances_array[:, 1:], new_distances_array), axis=0)
+
+        moves_array = np.abs(heights_array[ 1:,:] - heights_array[:-1,:]) <= 1
+        new_distances_array = np.ones_like(distances_array[ 1:,:]) * heights_array.size
+        new_distances_array[moves_array] = distances_array[ 1:,:][moves_array] + 1
+        distances_array[:-1,:] = np.min((distances_array[:-1,:], new_distances_array), axis=0)
+
+        moves_array = np.abs(heights_array[:-1,:] - heights_array[ 1:,:]) <= 1
+        new_distances_array = np.ones_like(distances_array[ 1:,:]) * heights_array.size
+        new_distances_array[moves_array] = distances_array[:-1,:][moves_array] + 1
+        distances_array[ 1:,:] = np.min((distances_array[ 1:,:], new_distances_array), axis=0)
+
+        print(f"{progress_counter}/{heights_array.size}")
+        progress_counter += 1
+
+
+    print(distances_array[end])
 
 
 
 
 if __name__ == "__main__":
-    start, end = find_start_end(load_string("../test_input.txt"))
-    find_path(load_string("../test_input.txt"), start, end)
+    input_lines = load_string("../input.txt")
+    start, end = find_start_end(input_lines)
+    find_path(input_lines, start, end)
