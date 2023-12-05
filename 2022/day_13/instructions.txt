@@ -109,11 +109,15 @@ Determine which pairs of packets are already in the right order. What is the sum
 
 --- Part Two ---
 Now, you just need to put all of the packets in the right order. Disregard the blank lines in your list of received packets.
+
 The distress signal protocol also requires that you include two additional divider packets:
+
 [[2]]
 [[6]]
 Using the same rules as before, organize all packets - the ones in your list of received packets as well as the two divider packets - into the correct order.
+
 For the example above, the result of putting the packets in the correct order is:
+
 []
 [[]]
 [[[]]]
@@ -122,9 +126,13 @@ For the example above, the result of putting the packets in the correct order is
 [[1],[2,3,4]]
 [1,[2,[3,[4,[5,6,0]]]],8,9]
 [1,[2,[3,[4,[5,6,7]]]],8,9]
-[[1],4][[2]][3]
+[[1],4]
+[[2]]
+[3]
 [[4,4],4,4]
-[[4,4],4,4,4][[6]][7,7,7]
+[[4,4],4,4,4]
+[[6]]
+[7,7,7]
 [7,7,7,7]
 [[8,7,6]]
 [9]
