@@ -12,6 +12,7 @@ test_input =['467..114..',
              '...$.*....',
              '.664.598..']
 
+
 test_array = np.array([list(word) for word in test_input])
 
 part_indicators = [(3, 1), (6, 3), (3, 4), (5, 5), (3, 8), (5, 8)]
@@ -33,3 +34,7 @@ def test_find_part_numbers():
     result = gondola.find_part_numbers(part_indicators, test_array)
 
     assert set(result) == set(part_numbers)
+
+def test_part2():
+    result = gondola.find_gear_ratios(part_indicators, test_array)
+    assert result == 467835
