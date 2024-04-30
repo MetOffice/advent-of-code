@@ -80,6 +80,17 @@ def get_lowest_location(seeds, maps):
     return min(things)
 
 
+def get_lowest_range(seeds, maps):
+    # seeds is a collection of ranges now...
+    # (seednum, range), (seednum, range) -> (start1, end1), (start2, end2)
+    # we will need to apply a MapRange to a range of source numbers, to create destination ranges
+    # we will do this for all the MapRanges in a Map... account for possible overlaps in a Map
+    # repeat for all Maps
+    # find the lowest bound of any of them
+    # voila
+    raise NotImplementedError
+
+
 if __name__ == "__main__":
     input_data = "../input.txt"
     with open(input_data) as file:
