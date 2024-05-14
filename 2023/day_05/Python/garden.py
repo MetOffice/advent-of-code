@@ -80,7 +80,32 @@ def get_lowest_location(seeds, maps):
     return min(things)
 
 
-def get_lowest_range(seeds, maps):
+def get_lowest_seed(seeds, maps, within_limits=None):
+    seed_ranges = sorted(list(zip(seeds[::2], seeds[1::2])))
+
+    if not maps:
+        for seed_range in seed_ranges:
+            top = seed_range[0] + seed_range[1]
+            bottom = seed_range[0]
+            if bottom >= within_limits[1]:
+                continue
+            if top < within_limits[0]:
+                continue
+
+            if within_limits[0] <= seed_range[0]:
+                return seed_range[0]
+            else:
+                return within_limits[0]
+
+        return None
+
+    # trying depth first search first before the paragraph below
+    # - choose lowest range (including not-MapRanges) within limits
+    # - compute what sub ranges the next map will split those into,
+    #   doing the map backwards
+    # - recurse depth first starting with the lowest range, and
+    #   then increasing if a seed is not found
+
     # seeds is a collection of ranges now...
     # (seednum, range), (seednum, range) -> (start1, end1), (start2, end2)
     # we will need to apply a MapRange to a range of source numbers, to create destination ranges
