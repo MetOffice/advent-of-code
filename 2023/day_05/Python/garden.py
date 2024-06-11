@@ -3,6 +3,21 @@ from typing import Optional
 
 from loaders import load_string
 
+@dataclass
+class ItemRange:
+    source_start: int
+    range_length: int
+
+    @property
+    def source_end(self):
+        return self.source_start + self.range_length
+    
+    def contains(self, idx:int):
+        """
+        Does this range contain the given index?
+        """
+        return self.source_start <= idx < self.source_end
+
 
 @dataclass
 class MapRange:
@@ -11,10 +26,38 @@ class MapRange:
     range_length: int
 
     def destination_index(self, source_index: int) -> int | None:
-        if self.source_start <= source_index < self.source_start + self.range_length:
-            return source_index - self.source_start + self.destination_start
+        if self.source_start <= source_index < self.source_end:
+            return source_index + self.mapping_offset
 
         return None
+    
+    @property
+    def source_end(self):
+        return self.source_start + self.range_length
+    
+    @property
+    def mapping_offset(self):
+        return self.destination_start - self.source_start
+    
+    def intersects_with(self, item_range:ItemRange) -> bool:
+        """
+        Does the given item range intersect with the source range?
+        """
+        # One or both of these should be a <= D:
+        return self.source_end > item_range.source_start and self.source_start < item_range.source_end
+    
+    def intersection(self, item_range:ItemRange) -> tuple[ItemRange, ItemRange]:
+        """
+        Get the intersection of overlapping item_range in source and destination index.
+        """
+        lower_bound = max(self.source_start, item_range.source_start)
+        upper_bound = min(self.source_end, item_range.source_end)
+        range_length = upper_bound - lower_bound
+
+        source_range = ItemRange(lower_bound, range_length)
+        destination_range = ItemRange(lower_bound + self.mapping_offset, range_length)
+
+        return source_range, destination_range
 
 
 @dataclass
@@ -68,6 +111,7 @@ def parse_input(input_string: str) -> tuple[list[int], list[Map]]:
     return seeds, the_maps
 
 
+# Part 1
 def get_lowest_location(seeds, maps):
     map_dict = {index_map.source_name: index_map for index_map in maps}
 
@@ -82,6 +126,7 @@ def get_lowest_location(seeds, maps):
     return min(things)
 
 
+# Part 2
 def get_lowest_seed(
     seed_ranges: list[tuple[int, int]],
     maps: list[Map],
@@ -178,4 +223,67 @@ if __name__ == "__main__":
     lowest = get_lowest_location(seeds, maps)
     print(lowest)
 
-    seed_ranges = sorted(list(zip(seeds[::2], seeds[1::2])))
+    seed_ranges = [ItemRange(*item) for item in zip(seeds[::2], seeds[1::2])]
+
+    pass
+
+
+# Brute Force Method
+    
+# Make numpy arrays where each entry is the value that index goes to
+#   - So if 3 -> 4 then we can have [0,1,2,4,4,5,...]
+# to build
+    # Start with range [0,...,999999]
+    # for each map add the displacement to the index on a slice
+# Do massive index chain like reachable_locations = location[...[fertiliser[soils[seeds]]]...]
+# min(that)
+    
+
+
+def get_lowest_seed(seed_ranges: list[ItemRange], maps: list[Map]) -> int:
+    """
+    TODO: Make this docstring vaguely representative of what we end up with.
+    Ranges moving method
+    We consider the ranges and their start/end points.
+    We find their image post mapping.
+    Repeat for each mapping.
+    Find the lowest endpoint at the end.
+
+    Start with seed ranges
+    Delete any portion that is mapped
+    Include mapped versions of those deleted portions
+    """
+
+    # A ranges first approach
+    # For each range in turn
+    #- Find any maps that cross into it
+    #- Create all child ranges
+    pass
+    
+
+def apply_map_to_ranges(item_ranges:list[ItemRange], mapping:Map):
+    map_ranges = mapping.ranges
+
+    for item_range in item_ranges:
+        poststep_ranges = []
+        snips = []
+
+        for map_range in map_ranges:
+            if not map_range.intersects_with(item_range):
+                continue
+            
+            # Want a pre step collection and post step collection
+
+
+            # I would like
+            # - to get the image by the map range
+            source_snip, destination_image = map_range.intersection(item_range)
+
+            poststep_ranges.append(destination_image)
+            snips.append(source_snip)
+
+
+            # - to snip out all the preimages from the item range
+            # - - Then at end add remainder to post step collection to the post step to allow passthroughs
+            
+
