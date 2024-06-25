@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 
+import numpy as np
+
 from loaders import load_string
 
 @dataclass
@@ -39,14 +41,14 @@ class MapRange:
     def mapping_offset(self):
         return self.destination_start - self.source_start
     
-    def intersects_with(self, item_range:ItemRange) -> bool:
+    def intersects_with(self, item_range: ItemRange) -> bool:
         """
         Does the given item range intersect with the source range?
         """
         # One or both of these should be a <= D:
-        return self.source_end > item_range.source_start and self.source_start < item_range.source_end
+        return self.source_end >= item_range.source_start and self.source_start <= item_range.source_end
     
-    def intersection(self, item_range:ItemRange) -> tuple[ItemRange, ItemRange]:
+    def intersection(self, item_range: ItemRange) -> tuple[ItemRange, ItemRange]:
         """
         Get the intersection of overlapping item_range in source and destination index.
         """
@@ -54,8 +56,12 @@ class MapRange:
         upper_bound = min(self.source_end, item_range.source_end)
         range_length = upper_bound - lower_bound
 
-        source_range = ItemRange(lower_bound, range_length)
-        destination_range = ItemRange(lower_bound + self.mapping_offset, range_length)
+        if range_length == 0:
+            source_range = None
+            destination_range = None
+        else:
+            source_range = ItemRange(lower_bound, range_length)
+            destination_range = ItemRange(lower_bound + self.mapping_offset, range_length)
 
         return source_range, destination_range
 
@@ -112,7 +118,7 @@ def parse_input(input_string: str) -> tuple[list[int], list[Map]]:
 
 
 # Part 1
-def get_lowest_location(seeds, maps):
+def get_lowest_location_1(seeds, maps):
     map_dict = {index_map.source_name: index_map for index_map in maps}
 
     things = seeds
@@ -213,21 +219,6 @@ def get_lowest_seed(
     # voila
     raise NotImplementedError
 
-
-if __name__ == "__main__":
-    input_data = "../input.txt"
-    with open(input_data) as file:
-        input_string = file.read()
-
-    seeds, maps = parse_input(input_string)
-    lowest = get_lowest_location(seeds, maps)
-    print(lowest)
-
-    seed_ranges = [ItemRange(*item) for item in zip(seeds[::2], seeds[1::2])]
-
-    pass
-
-
 # Brute Force Method
     
 # Make numpy arrays where each entry is the value that index goes to
@@ -240,7 +231,7 @@ if __name__ == "__main__":
     
 
 
-def get_lowest_seed(seed_ranges: list[ItemRange], maps: list[Map]) -> int:
+def get_lowest_location_2(seed_ranges: list[ItemRange], maps: list[Map]) -> int:
     """
     TODO: Make this docstring vaguely representative of what we end up with.
     Ranges moving method
@@ -258,32 +249,64 @@ def get_lowest_seed(seed_ranges: list[ItemRange], maps: list[Map]) -> int:
     # For each range in turn
     #- Find any maps that cross into it
     #- Create all child ranges
-    pass
-    
+    current_thing = "seed"
+    destinations = seed_ranges
+    for map in maps:
+        destinations = apply_map_to_ranges(destinations, map)
 
-def apply_map_to_ranges(item_ranges:list[ItemRange], mapping:Map):
+    # find the lowest
+    lowest = np.inf
+    for dest_range in destinations:
+        if dest_range.source_start < lowest:
+            lowest = dest_range.source_start
+
+    return lowest
+
+
+def apply_map_to_ranges(item_ranges: list[ItemRange], mapping: Map):
     map_ranges = mapping.ranges
 
-    for item_range in item_ranges:
-        poststep_ranges = []
-        snips = []
+    destinations = []
 
-        for map_range in map_ranges:
+    for map_range in map_ranges:
+        next_item_ranges = []
+        for item_range in item_ranges:
             if not map_range.intersects_with(item_range):
+                next_item_ranges.append(item_range)
                 continue
-            
-            # Want a pre step collection and post step collection
 
-
-            # I would like
-            # - to get the image by the map range
             source_snip, destination_image = map_range.intersection(item_range)
+            if source_snip is None:
+                continue
+            destinations.append(destination_image)
+            # generate the new item ranges to account for passthroughs
+            if (source_snip.source_start == item_range.source_start) and (source_snip.source_end == item_range.source_end):
+                continue
+            elif source_snip.source_start == item_range.source_start:
+                next_item_ranges.append(ItemRange(source_snip.source_end + 1, item_range.range_length - source_snip.range_length))
 
-            poststep_ranges.append(destination_image)
-            snips.append(source_snip)
+            elif source_snip.source_end == item_range.source_end:
+                next_item_ranges.append(ItemRange(item_range.source_start, item_range.range_length - source_snip.range_length))
+            else:
+                # snip is in the middle
+                next_item_ranges.append(ItemRange(item_range.source_start, source_snip.source_start - item_range.source_start))
+                next_item_ranges.append(ItemRange(source_snip.source_end + 1, item_range.source_end - source_snip.source_end))
+
+        item_ranges = next_item_ranges
+
+    destinations.extend(item_ranges)
+
+    return destinations
 
 
-            # - to snip out all the preimages from the item range
-            # - - Then at end add remainder to post step collection to the post step to allow passthroughs
-            
+if __name__ == "__main__":
+    input_data = "../input.txt"
+    with open(input_data) as file:
+        input_string = file.read()
+
+    seeds, maps = parse_input(input_string)
+    seed_ranges = [ItemRange(*item) for item in zip(seeds[::2], seeds[1::2])]
+    lowest = get_lowest_location_2(seed_ranges, maps)
+    # lowest = get_lowest_location(seeds, maps)
+    print(lowest)
 
