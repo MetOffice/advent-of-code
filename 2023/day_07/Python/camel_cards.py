@@ -8,7 +8,7 @@ card_values = {
     'A': 14,
     'K': 13,
     'Q': 12,
-    'J': 11,  # Part 2, this will become 1
+    'J': 1,
     'T': 10,
     '9': 9,
     '8': 8,
@@ -31,6 +31,7 @@ class Category(Enum):
     HIGH_CARD = 0
 
 
+
 @dataclass(frozen=True)
 class Hand:
     cards: str
@@ -40,17 +41,22 @@ class Hand:
     @property
     @cache
     def category(self) -> Category:
-        card_counts = collections.Counter(self.cards)
+        cards_without_jokers = self.cards.replace("J", "")
+        return self._category(cards_without_jokers)
+
+    @staticmethod
+    def _category(cards: str) -> Category:
+        card_counts = collections.Counter(cards)
         unique_card_count = len(card_counts)
-        if unique_card_count == 1:
+        if unique_card_count == 1 or len(cards) == 0:
             return Category.FIVE_OF_A_KIND
         elif unique_card_count == 2:
-            if 4 in card_counts.values():
+            if 1 in card_counts.values():
                 return Category.FOUR_OF_A_KIND
             else:
                 return Category.FULL_HOUSE
         elif unique_card_count == 3:
-            if 3 in card_counts.values():
+            if 3 in card_counts.values() or len(cards) < 5:
                 return Category.THREE_OF_A_KIND
             else:
                 return Category.TWO_PAIRS

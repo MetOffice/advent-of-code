@@ -28,5 +28,5 @@ QQQJA 483"""
 
 def test_input_test():
     result = camel_cards.calulate_for_string(test_input.split('\n'))
-    assert result == 6440
+    assert result == 5905
 
