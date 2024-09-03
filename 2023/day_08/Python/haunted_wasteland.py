@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import multiprocessing as mp
 import os
 
@@ -12,9 +13,10 @@ GGG = (GGG, GGG)
 ZZZ = (ZZZ, ZZZ)"""
 
 #! Ignore me
-'''class Node:
+"""class Node:
     entrance: str
-    exits: tuple[Self, Self]'''
+    exits: tuple[Self, Self]"""
+
 
 def load_data(filename: str) -> tuple[str, list[str]]:
     """Loads the initial datafile
@@ -81,35 +83,47 @@ def nodes_to_dict(nodes):
     nodes_dict = {}
 
     for node in nodes:
-        nodes_dict[node[0]] = {
-            "L": node[1][0],
-            "R": node[1][1]
-        }
+        nodes_dict[node[0]] = {"L": node[1][0], "R": node[1][1]}
 
     return nodes_dict
 
+
+@dataclass(frozen=True)
+class LocationOfZ:
+    instruction_index: int
+    node: str
+    step_count: int
+
+
 if __name__ == "__main__":
 
-    os.chdir("/net/home/h04/prelton/terminal_start/projects/advent-of-code/2023/day_08/Python")
     instructions, nodes = load_data("./data.txt")
 
     # Convert the nodes to a dictionary
     nodes_dict = nodes_to_dict(nodes)
 
-    node_count = 0
+    instruction_index = 0
     full_count = 0
 
     current_nodes = {node for node in nodes_dict if node[-1] == "A"}
 
+    loop_detection: tuple[list[LocationOfZ], ...] = tuple([] for node in current_nodes)
+
+    # While any ghost is at a node not ending in Z
     while any(current_node[-1] != "Z" for current_node in current_nodes):
-        current_nodes = {nodes_dict[current_node][instructions[node_count]] for current_node in current_nodes}
-        node_count += 1
+
+        # Step each ghost forward according to the current instruction direction
+        current_nodes = {
+            nodes_dict[current_node][instructions[instruction_index]]
+            for current_node in current_nodes
+        }
+        instruction_index += 1
         full_count += 1
-        if node_count > len(instructions) - 1:
-            node_count = 0
+        if instruction_index > len(instructions) - 1:
+            instruction_index = 0
 
         cases = [current_node[-1] != "Z" for current_node in current_nodes]
-        if not all(cases):
+        if not any(cases):
             print(full_count)
             print(current_nodes)
             exit()
