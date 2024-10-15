@@ -1,6 +1,6 @@
 import collections
 from enum import Enum
-from typing import NamedTuple, Tuple, Dict, Set, List
+from typing import Iterable, NamedTuple, Tuple, Dict, Set, List
 
 # | is a vertical pipe connecting north and south.
 # - is a horizontal pipe connecting east and west.
@@ -12,6 +12,7 @@ from typing import NamedTuple, Tuple, Dict, Set, List
 # S is the starting position of the animal; there is a pipe on this tile, but your sketch doesn't show what shape the pipe has.
 Coordinate = collections.namedtuple("Coordinate", ["row", "column", "direction"])
 Grid = list[list[str]]
+
 
 class Direction(Enum):
     NORTH = 0
@@ -30,17 +31,24 @@ class Direction(Enum):
             case Direction.WEST:
                 return Direction.EAST
 
-    def apply(self, coordinate:Coordinate):
+    def apply(self, coordinate: Coordinate):
         match self:
             case Direction.NORTH:
-                return Coordinate(coordinate.row-1, coordinate.column, coordinate.direction)
+                return Coordinate(
+                    coordinate.row - 1, coordinate.column, coordinate.direction
+                )
             case Direction.SOUTH:
-                return Coordinate(coordinate.row+1, coordinate.column, coordinate.direction)
+                return Coordinate(
+                    coordinate.row + 1, coordinate.column, coordinate.direction
+                )
             case Direction.EAST:
-                return Coordinate(coordinate.row, coordinate.column+1, coordinate.direction)
+                return Coordinate(
+                    coordinate.row, coordinate.column + 1, coordinate.direction
+                )
             case Direction.WEST:
-                return Coordinate(coordinate.row, coordinate.column-1, coordinate.direction)
-
+                return Coordinate(
+                    coordinate.row, coordinate.column - 1, coordinate.direction
+                )
 
 
 directions_mapping: dict[str, set[Direction]] = {
@@ -49,15 +57,12 @@ directions_mapping: dict[str, set[Direction]] = {
     "L": {Direction.NORTH, Direction.EAST},
     "J": {Direction.NORTH, Direction.WEST},
     "7": {Direction.SOUTH, Direction.WEST},
-    "F": {Direction.SOUTH, Direction.EAST}
+    "F": {Direction.SOUTH, Direction.EAST},
 }
 
 
-
-
-def load_grid(file: str) -> list[list[str]]:  # Row,Column
-    with open(file, "r") as f:
-        return [list(i) for i in f]
+def load_grid(lines: Iterable[str]) -> list[list[str]]:  # Row,Column
+    return [list(i) for i in lines]
 
 
 def find_start_coordinate(grid: Grid) -> Coordinate:
@@ -81,7 +86,9 @@ def find_start_direction(grid: Grid, position: Coordinate) -> set[Direction]:
     return directions
 
 
-def next_move(grid: Grid, current_position: Coordinate, last_move: Direction) -> Direction:
+def next_move(
+    grid: Grid, current_position: Coordinate, last_move: Direction
+) -> Direction:
     current_shape = grid[current_position.row][current_position.column]
     possible_directions = set(directions_mapping[current_shape])
     possible_directions.remove(last_move.opposite())
@@ -90,33 +97,33 @@ def next_move(grid: Grid, current_position: Coordinate, last_move: Direction) ->
     return possible_directions.pop()
 
 
-def main():
-    grid = load_grid("../input")
+def find_longest_distance(grid: Grid) -> int:
     start = find_start_coordinate(grid)
-    print(start)
     first_moves = find_start_direction(grid, start)
 
     directions = list(first_moves)
 
     coordinates: list[Coordinate] = [
-        start,start
+        directions[0].apply(start),
+        directions[1].apply(start),
     ]
-    moves = 0
-    while coordinates[0] != coordinates[1] or moves == 0:
+    moves = 1
+    while coordinates[0] != coordinates[1]:
         directions[0] = next_move(grid, coordinates[0], directions[0])
         directions[1] = next_move(grid, coordinates[1], directions[1])
         coordinates[0] = directions[0].apply(coordinates[0])
         coordinates[1] = directions[1].apply(coordinates[1])
 
-        print(coordinates)
         moves += 1
-    print(moves)
+
+    return moves
 
 
+def main():
+    with open("../input", "r") as f:
+        grid = load_grid(f)
 
-
-    print(coordinates)
-    #print(grid)
+    print(find_longest_distance(grid))
 
 
 if __name__ == "__main__":
