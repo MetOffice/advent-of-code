@@ -62,7 +62,7 @@ directions_mapping: dict[str, set[Direction]] = {
 
 
 def load_grid(lines: Iterable[str]) -> list[list[str]]:  # Row,Column
-    return [list(i) for i in lines]
+    return [list(i.strip()) for i in lines]
 
 
 def find_start_coordinate(grid: Grid) -> Coordinate:
@@ -87,7 +87,7 @@ def find_start_direction(grid: Grid, position: Coordinate) -> set[Direction]:
 
 
 def next_move(
-    grid: Grid, current_position: Coordinate, last_move: Direction
+        grid: Grid, current_position: Coordinate, last_move: Direction
 ) -> Direction:
     current_shape = grid[current_position.row][current_position.column]
     possible_directions = set(directions_mapping[current_shape])
@@ -97,11 +97,20 @@ def next_move(
     return possible_directions.pop()
 
 
-def find_longest_distance(grid: Grid) -> int:
+def find_start_shape(first_moves):
+    for k, v in directions_mapping.items():
+        if v == first_moves:
+            return k
+
+
+def find_longest_distance(grid: Grid) -> (int, Grid):
+    isolated_grid: Grid = [["."] * len(grid[0]) for i in range(len(grid))]
     start = find_start_coordinate(grid)
     first_moves = find_start_direction(grid, start)
 
     directions = list(first_moves)
+
+    isolated_grid[start.row][start.column] = find_start_shape(first_moves)
 
     coordinates: list[Coordinate] = [
         directions[0].apply(start),
@@ -111,19 +120,71 @@ def find_longest_distance(grid: Grid) -> int:
     while coordinates[0] != coordinates[1]:
         directions[0] = next_move(grid, coordinates[0], directions[0])
         directions[1] = next_move(grid, coordinates[1], directions[1])
+        isolated_grid[coordinates[0].row][coordinates[0].column] = grid[coordinates[0].row][coordinates[0].column]
+        isolated_grid[coordinates[1].row][coordinates[1].column] = grid[coordinates[1].row][coordinates[1].column]
         coordinates[0] = directions[0].apply(coordinates[0])
         coordinates[1] = directions[1].apply(coordinates[1])
 
         moves += 1
+    # Copy the final position
+    isolated_grid[coordinates[0].row][coordinates[0].column] = grid[coordinates[0].row][coordinates[0].column]
+    return moves, isolated_grid
 
-    return moves
+
+class Insideness(Enum):
+    IN = 0
+    OUT = 1
+
+    def __invert__(self):
+        return Insideness.IN if self == Insideness.OUT else Insideness.OUT
+
+
+class CameFrom(Enum):
+    UP = 0
+    DOWN = 1
+    NOTHING = 2
+
+
+def scan_row(grid: Grid, row_index: int) -> int:
+    row = grid[row_index]
+    current_insideness = Insideness.OUT
+    came_from = CameFrom.NOTHING
+    count_of_inside = 0
+    for char in row:
+        if current_insideness == Insideness.IN and char == '.':
+            count_of_inside += 1
+        else:
+            match (char, came_from):
+                case ("|", _):
+                    current_insideness = ~ current_insideness
+                case ("L", _ ):
+                    came_from = CameFrom.UP
+                case ("J", CameFrom.DOWN):
+                    current_insideness = ~ current_insideness
+                    came_from = CameFrom.NOTHING
+                case ("F", _):
+                    came_from = CameFrom.DOWN
+                case ("7", CameFrom.UP):
+                    current_insideness = ~ current_insideness
+                    came_from = CameFrom.NOTHING
+    return count_of_inside
+
+def scan_grid(grid: Grid) -> int:
+    return sum(scan_row(grid, i) for i in range(len(grid)))
+
+def print_grid(grid: Grid):
+    [print("".join(line)) for line in grid]
 
 
 def main():
     with open("../input", "r") as f:
         grid = load_grid(f)
 
-    print(find_longest_distance(grid))
+    longest_distance, isolated_grid = find_longest_distance(grid)
+    print_grid(isolated_grid)
+    print(longest_distance)
+    print(scan_grid(isolated_grid))
+
 
 
 if __name__ == "__main__":
