@@ -18,7 +18,8 @@ def expand_grid_rows(grid: Grid) -> Grid:
     for idx, row in enumerate(grid):
         new_grid.append(row)
         if row_is_empty(grid,idx):
-            new_grid.append(row)
+            for i in range(1_000_000): # Part 2 Don't do this...
+                new_grid.append(row)
     return new_grid
 
 def expand(grid: Grid) -> Grid:
@@ -64,3 +65,11 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+## Part 2
+"""
+Find original coordinates first (before any expansion)
+Scan the galaxy horizontally, keep track of how many blank columns, add that to the coordinate
+Transpose, do again.
+"""
