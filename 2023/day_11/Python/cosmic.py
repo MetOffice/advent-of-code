@@ -1,75 +1,95 @@
 from collections import namedtuple
 from dataclasses import dataclass
+from typing import Literal, LiteralString, List
 
-Grid = list[list[str]]
+
+@dataclass
+class Coordinate:
+    x: int
+    y: int
+
+
+Grid = list[list[str | Coordinate]]
+
 
 def load_file(file_path: str) -> Grid:
     with open(file_path) as file:
         return [list(i.strip()) for i in file]
 
-def row_is_empty(grid: Grid, row: int) -> bool:
-    return all(cell == "." for cell in grid[row])
 
 def column_is_empty(grid: Grid, column: int) -> bool:
     return all(row[column] == "." for row in grid)
 
-def expand_grid_rows(grid: Grid) -> Grid:
-    new_grid :Grid = []
+
+def offset_all_in_column(grid: Grid, column: int, offset: int,
+                         coordinate_to_adjust: Literal["x"] | Literal["y"]) -> None:
+    for row in grid:
+        if isinstance(row[column], Coordinate):
+            if coordinate_to_adjust == "x":
+                row[column].x += offset
+            else:
+                row[column].y += offset
+
+
+def offset_all_in_row(grid: Grid, row: int, offset: int, coordinate_to_adjust: Literal["x"] | Literal["y"]) -> None:
+    for x in grid[row]:
+        if isinstance(x, Coordinate):
+            if coordinate_to_adjust == "x":
+                x.x += offset
+            else:
+                x.y += offset
+
+
+def adjust_coordinates(grid: Grid, coordinate_to_adjust: Literal["x"] | Literal["y"]) -> None:
+    current_offset = 0
     for idx, row in enumerate(grid):
-        new_grid.append(row)
-        if row_is_empty(grid,idx):
-            for i in range(1_000_000): # Part 2 Don't do this...
-                new_grid.append(row)
-    return new_grid
-
-def expand(grid: Grid) -> Grid:
-    return transpose(expand_grid_rows(transpose(expand_grid_rows(grid))))
+        if column_is_empty(grid, idx):
+            current_offset += 1_000_000 - 1
+        else:
+            offset_all_in_column(grid, idx, current_offset, coordinate_to_adjust)
 
 
-def transpose(grid: Grid) -> Grid:
-    return [list(x) for x in list(zip(*grid))]
+def expand(grid: Grid) -> None:
+    adjust_coordinates(grid, 'x')
+    grid = transpose(grid)
+    adjust_coordinates(grid, 'y')
 
-namedtuple("Test",["x","y"])
-
-@dataclass(frozen=True)
-class Coordinate:
-    x: int
-    y: int
 
 def find_galaxies(grid: Grid) -> list[Coordinate]:
     coords = []
     for row in range(len(grid)):
         for column in range(len(grid[0])):
             if grid[row][column] == "#":
-                coords.append(Coordinate(column,row))
+                new_coord = Coordinate(column, row)
+                grid[row][column] = new_coord
+                coords.append(new_coord)
     return coords
+
+
+def transpose(grid: Grid) -> Grid:
+    return [list(x) for x in list(zip(*grid))]
+
 
 def distance(coord1: Coordinate, coord2: Coordinate) -> int:
     return abs(coord1.x - coord2.x) + abs(coord1.y - coord2.y)
+
 
 def all_pairs(coords: list[Coordinate]) -> int:
     total = 0
     for i in range(len(coords)):
         for j in range(i):
-            total+=distance(coords[i],coords[j])
+            total += distance(coords[i], coords[j])
     return total
 
 
 def main():
     grid = load_file("../input")
-    expanded = expand(grid)
-    galaxies = find_galaxies(expanded)
+    galaxies = find_galaxies(grid)
+    expand(grid)
     result = all_pairs(galaxies)
     print(result)
     print("Hello, World!")
 
+
 if __name__ == "__main__":
     main()
-
-
-## Part 2
-"""
-Find original coordinates first (before any expansion)
-Scan the galaxy horizontally, keep track of how many blank columns, add that to the coordinate
-Transpose, do again.
-"""
