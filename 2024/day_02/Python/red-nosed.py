@@ -1,5 +1,6 @@
 import copy
 from collections import Counter
+from math import copysign
 from typing import List, LiteralString, Literal
 
 
@@ -8,25 +9,22 @@ def read_file() -> List[List[int]]:
         lines = file.readlines()
         return [[int(i) for i in line.split(" ")] for line in lines]
 
-def check_report(report: List[int]) -> Literal["SAFE", "UNSAFE"]:
-    temp_list = copy.copy(report)
-    temp_list.sort()
-
-    temp_list_2 = copy.copy(report)
-    temp_list_2.sort(reverse=True)
-    if not (report == temp_list or report == temp_list_2):
+def check_report(report: List[int], depth=0) -> Literal["SAFE", "UNSAFE"]:
+    if depth > 1:
         return "UNSAFE"
-
-    ## check second condition
-    ## difference between numbers in report
-
+    sign = copysign(1,report[0] - report[1])
     for i in range(len(report) - 1):
         diff = report[i] - report[i+1]
-        if not (3 >= abs(diff) >= 1):
-            return "UNSAFE"
+        if not (3 >= abs(diff) >= 1 and sign == copysign(1,diff)) :
+
+            check_report(report[::i]+report[i+1::], depth+1)
+            check_report(report[::i+1]+report[i+2::], depth+1)
+
+            return check_report(report[::i]+report[i+1::], depth+1)
 
     return "SAFE"
 
+[3,5,9,6,8]
 
 def main():
     reports = read_file()
