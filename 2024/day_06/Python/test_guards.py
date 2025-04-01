@@ -16,4 +16,4 @@ INPUT = """
 
 
 def test_guards():
-    assert 41 == count_paces(INPUT)
+    assert count_paces(INPUT) == 41

@@ -5,7 +5,7 @@ import numpy as np
 # FIXME problems with looking outside of bounds too early and erroring,
 #       need to think about when we do bounds checks
 
-CLOCKWISE = np.array([[0, -1], [1, 0]])
+CLOCKWISE = np.array([[0, 1], [-1, 0]])
 
 
 def walk(area, cursor, direction) -> tuple[np.ndarray, np.ndarray, bool]:
@@ -36,15 +36,26 @@ def out_of_bounds(area, cursor) -> bool:
 def count_paces(area_str: str) -> int:
     area_list_of_lists = [list(line) for line in area_str.splitlines()[1:]]
     area = np.array(area_list_of_lists)
+    area = np.pad(area,1, "constant",constant_values='_')
 
     (cursor,) = np.argwhere(area == "^")
-    direction = np.array([0, -1])
+    direction = np.array([-1, 0])
 
-    total_visited = 1
+    total_visited = 0
     newly_visited = True
 
-    while not out_of_bounds(area, cursor):
+    while not area[tuple(cursor)] == "_":
         total_visited += newly_visited
         cursor, direction, newly_visited = walk(area, cursor, direction)
 
     return total_visited
+
+
+def main():
+    with open("input","r") as f:
+        data = f.read()
+    print(count_paces(data))
+
+
+if __name__ == "__main__":
+    main()
