@@ -1,5 +1,4 @@
-from guards import count_paces
-
+from guards import iterate_obstacles
 
 INPUT = """
 ....#.....
@@ -16,4 +15,4 @@ INPUT = """
 
 
 def test_guards():
-    assert count_paces(INPUT) == 41
+    assert iterate_obstacles(INPUT) == 6
