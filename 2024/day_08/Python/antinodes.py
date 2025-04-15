@@ -2,11 +2,12 @@ import string
 from itertools import combinations
 import numpy as np
 
+
 def load_input(filename):
     """
     Load the puzzle input from a file.
     """
-    with open(filename, 'r') as file:
+    with open(filename, "r") as file:
         lines = file.readlines()
 
     new_lines = []
@@ -35,6 +36,7 @@ def find_antinodes(coordinateA, coordinateB):
 
     return antinodeA, antinodeB
 
+
 if __name__ == "__main__":
     puzzle_input = load_input("input.txt")
 
@@ -51,13 +53,14 @@ if __name__ == "__main__":
         for antenna in combinations(antennae, 2):
             antinodes.extend(find_antinodes(antenna[0], antenna[1]))
 
-
     antinodes = set(map(tuple, antinodes))
     print(antinodes)
 
     # Remove out of bounds
     antinodes = [
-        antinode for antinode in antinodes if all(0 <= coord < bound for coord, bound in zip(antinode, puzzle_bounds))
+        antinode
+        for antinode in antinodes
+        if all(0 <= coord < bound for coord, bound in zip(antinode, puzzle_bounds))
     ]
     print(len(antinodes))
 

@@ -1,6 +1,7 @@
 import operator as op
 import itertools
 
+
 def load_input(filename: str) -> list:
     with open(filename, "r") as file:
         lines = file.readlines()
@@ -17,7 +18,8 @@ def process_input(lines):
 
     return answers, values
 
-def check_equation(answer, values, pos_operators = [op.add, op.mul]):
+
+def check_equation(answer, values, pos_operators=[op.add, op.mul]):
     Noperators = len(values) - 1
 
     operator_list = itertools.product(pos_operators, repeat=Noperators)
@@ -28,6 +30,7 @@ def check_equation(answer, values, pos_operators = [op.add, op.mul]):
             result = op(result, val)
         if result == answer:
             return True
+
 
 def concatenate_operator(a, b):
     return int(str(a) + str(b))
