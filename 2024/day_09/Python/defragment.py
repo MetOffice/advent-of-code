@@ -24,32 +24,25 @@ def rearrange_inplace_part1(inp: list[str]) -> None:
 
 def scan_for_space(inp, size_of_file, max):
     next_free = next_free_space(inp, 0)
+    if next_free >= max:
+        raise IndexError
 
     while (size_of_space := get_size_of_space(inp, next_free)) < size_of_file:
         next_free = next_free_space(inp, next_free + size_of_space)
-        if next_free > max:
+        if next_free >= max:
             raise IndexError
     return next_free
 
 
 def rearrange_inplace_part2(inp: list[str]) -> None:
-    last_visited = 0
     last_char = next_char_backwards(inp, len(inp) - 1)
-
-    processed_ids = set()
-
     while True:
 
         print(inp[last_char])
         size_of_file = get_size_of_file(inp, last_char)
-        if inp[last_char] in processed_ids:
-            print(f"Already seen {inp[last_char]}")
-            last_char = next_char_backwards(inp, last_char - size_of_file)
-            continue
         if last_char - size_of_file == 0:
             print("end")
             break
-        processed_ids.add(inp[last_char])
         try:
             index_of_space = scan_for_space(inp, size_of_file, last_char)
         except IndexError:
@@ -57,7 +50,6 @@ def rearrange_inplace_part2(inp: list[str]) -> None:
         else:
             place_in_position(inp, inp[last_char], index_of_space, size_of_file)
             place_in_position(inp, '.', last_char - size_of_file + 1, size_of_file)
-            last_visited = index_of_space
         last_char = next_char_backwards(inp, last_char - size_of_file)
 
 
