@@ -47,7 +47,7 @@ def detect_features(arr: np.ndarray):
 
 
 def calculate_feature_perimeter(arr: np.ndarray):
-    arr = np.pad(arr,1, "constant")
+    arr = np.pad(arr, 1, "constant")
     vert = ndimage.convolve1d(arr.astype(int), np.array([1, -1]), 0, None, "constant", 0)
     horz = ndimage.convolve1d(arr.astype(int), np.array([1, -1]), 1, None, "constant", 0)
     combined = np.absolute(vert) + np.absolute(horz)
@@ -55,12 +55,27 @@ def calculate_feature_perimeter(arr: np.ndarray):
     return res
 
 
+def calculate_feature_corners(arr: np.ndarray):
+    arr = np.pad(arr, 1, "constant")
+    corners = ndimage.convolve(arr.astype(int), np.array(
+        [
+            [1, -1],
+            [-1, 1]
+        ]
+    ))
+    return np.absolute(corners).sum()
+
+
 def calculate_feature_area(arr):
     return arr.sum()
 
 
-def calculate_feature(arr):
+def calculate_feature_pt1(arr):
     return calculate_feature_perimeter(arr) * calculate_feature_area(arr)
+
+
+def calculate_feature_pt2(arr):
+    return calculate_feature_corners(arr) * calculate_feature_area(arr)
 
 
 def main():
@@ -70,8 +85,10 @@ def main():
 
     all_individual_features = reduce(operator.concat, (detect_features(arr) for arr in many_arrs), [])
 
-    features = [calculate_feature(f) for f in all_individual_features]
-    print(sum(features))
+    features_pt1 = [calculate_feature_pt1(f) for f in all_individual_features]
+    features_pt2 = [calculate_feature_pt2(f) for f in all_individual_features]
+    print(f"Part 1: {sum(features_pt1)}")
+    print(f"Part 2: {sum(features_pt2)}")
 
 
 if __name__ == "__main__":
