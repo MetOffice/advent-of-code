@@ -4,6 +4,19 @@ B button: 1 token
 
 If we assume there's only one valid number of A&B presses,
 let's just find out what that is
+
+PX = NA*AX + NB*BX
+PY = NA*AY + NB*BY
+
+NA = (PX - NB*BX) / AX
+
+PY = ((PX - NB*BX) / AX)*AY + NB*BY
+PY = PX*AY/AX - NB*BX*AY/AX + NB*BY
+              - NB*(BX*AY/AX + BY)
+
+PX*AY/AX - PY = NB*(BX*AY/AX + BY)
+(PX*AY/AX - PY) / (BX*AY/AX + BY) = NB
+
 """
 
 from dataclasses import dataclass
