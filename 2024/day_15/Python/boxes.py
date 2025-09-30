@@ -1,6 +1,8 @@
 import itertools
+import os
 from dataclasses import dataclass
 import numpy as np
+from PIL import Image
 
 
 @dataclass(frozen=True)
@@ -39,19 +41,46 @@ def step_right(warehouse: np.ndarray, robot):
 
     # Cannot move
     if stop_character == '#':
-        return
+        return robot
 
     # Re-insert the original line back into the warehouse offset by 1
     warehouse[robot[0], robot[1] + 1: robot[1] + len(line_of_interest) + 1] = line_of_interest
     # Remove the original position of the robot
     warehouse[robot[0], robot[1]] = '.'
 
+    return robot[0], robot[1] + 1
+
 def main():
+    images = []
+
     inp = read_input("test_input.txt")
     robot = find_robot(inp.warehouse)
-    step_right(inp.warehouse, robot)
+    while True:
+        print(chr(27) + "[2J")
+        print(inp.warehouse)
+        images.append(convert_image(inp.warehouse).resize((300, 300), Image.NEAREST))
+        robot = step_right(inp.warehouse, robot)
+        if input("Continue...") == "q":
+            break
 
-    print(inp.warehouse)
+    images[0].save('warehouse.gif',
+               save_all=True, append_images=images[1:], optimize=False, duration=1000, loop=1)
+    os.startfile('warehouse.gif')
+
+def convert_image(arr):
+    colour_map = {
+        '.': (255, 255, 255),
+        '#': (50, 50, 50),
+        '@': (255, 0, 0),
+    }
+    height, width = arr.shape
+    img = Image.new('RGB', (width, height))
+
+    for y in range(height):
+        for x in range(width):
+            img.putpixel((x, y), colour_map.get(arr[y, x], (128, 128, 128)))
+
+    return img
 
 
 if __name__ == "__main__":
