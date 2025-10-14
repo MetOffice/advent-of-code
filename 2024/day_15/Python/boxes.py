@@ -28,6 +28,7 @@ def find_robot(warehouse: np.ndarray):
     res = np.where(warehouse == '@')
     return res[0][0], res[1][0]
 
+
 def step(warehouse, dir: Literal['^', 'v', '<', '>']):
     match dir:
         case '>':
@@ -41,6 +42,7 @@ def step(warehouse, dir: Literal['^', 'v', '<', '>']):
         case 'v':
             rotated = np.rot90(warehouse, 1)
             step_right(rotated)
+
 
 def step_right(warehouse: np.ndarray):
     """
@@ -67,21 +69,29 @@ def step_right(warehouse: np.ndarray):
 
     return
 
+
+def score(warehouse: np.ndarray):
+    all_boxes = np.where(warehouse == 'O')
+    coords = zip(all_boxes[0], all_boxes[1])
+    return sum(x + (100 * y) for (y, x) in coords)
+
+
 def main():
     images = []
 
-    inp = read_input("test_input.txt")
-    while True:
-        print(chr(27) + "[2J")
-        print(inp.warehouse)
-        images.append(convert_image(inp.warehouse).resize((300, 300), Image.NEAREST))
-        step(inp.warehouse, '^')
-        if input("Continue...") == "q":
-            break
+    inp = read_input("input.txt")
+    for move in inp.moves:
+        # print(chr(27) + "[2J")
+        # print(inp.warehouse)
+        # images.append(convert_image(inp.warehouse).resize((300, 300), Image.NEAREST))
+        step(inp.warehouse, move)
 
-    images[0].save('warehouse.gif',
-               save_all=True, append_images=images[1:], optimize=False, duration=1000, loop=1)
-    os.startfile('warehouse.gif')
+    result = score(inp.warehouse)
+    print(result)
+
+    # images[0].save('warehouse.gif', save_all=True, append_images=images[1:], optimize=False, duration=10, loop=1)
+    # os.startfile('warehouse.gif')
+
 
 def convert_image(arr):
     colour_map = {
