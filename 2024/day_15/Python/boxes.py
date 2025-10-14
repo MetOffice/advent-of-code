@@ -1,6 +1,8 @@
 import itertools
 import os
 from dataclasses import dataclass
+from typing import Literal
+
 import numpy as np
 from PIL import Image
 
@@ -26,10 +28,25 @@ def find_robot(warehouse: np.ndarray):
     res = np.where(warehouse == '@')
     return res[0][0], res[1][0]
 
-def step_right(warehouse: np.ndarray, robot):
+def step(warehouse, dir: Literal['^', 'v', '<', '>']):
+    match dir:
+        case '>':
+            step_right(warehouse)
+        case '<':
+            rotated = np.rot90(warehouse, 2)
+            step_right(rotated)
+        case '^':
+            rotated = np.rot90(warehouse, 3)
+            step_right(rotated)
+        case 'v':
+            rotated = np.rot90(warehouse, 1)
+            step_right(rotated)
+
+def step_right(warehouse: np.ndarray):
     """
     Operates in-place!!!!!!!
     """
+    robot = find_robot(warehouse)
     # Get the line to the right of the robot
     line = warehouse[robot[0]][robot[1]:]
 
@@ -41,25 +58,24 @@ def step_right(warehouse: np.ndarray, robot):
 
     # Cannot move
     if stop_character == '#':
-        return robot
+        return
 
     # Re-insert the original line back into the warehouse offset by 1
     warehouse[robot[0], robot[1] + 1: robot[1] + len(line_of_interest) + 1] = line_of_interest
     # Remove the original position of the robot
     warehouse[robot[0], robot[1]] = '.'
 
-    return robot[0], robot[1] + 1
+    return
 
 def main():
     images = []
 
     inp = read_input("test_input.txt")
-    robot = find_robot(inp.warehouse)
     while True:
         print(chr(27) + "[2J")
         print(inp.warehouse)
         images.append(convert_image(inp.warehouse).resize((300, 300), Image.NEAREST))
-        robot = step_right(inp.warehouse, robot)
+        step(inp.warehouse, '^')
         if input("Continue...") == "q":
             break
 
