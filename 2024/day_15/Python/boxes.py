@@ -44,6 +44,35 @@ def step(warehouse, dir: Literal['^', 'v', '<', '>']):
             step_right(rotated)
 
 
+def step_down(warehouse: np.ndarray):
+    robot = find_robot(warehouse)
+    movable = get_movable_blocks(warehouse, robot)
+    print(movable)
+    ## This seems to work. Do the rest.
+
+
+def get_movable_blocks(warehouse: np.ndarray, current_pos) -> set | None:
+    direction = 1
+    next_pos = (current_pos[0] + direction, current_pos[1])
+    next_char = warehouse[next_pos]
+    if next_char == '.':
+        return set([current_pos])
+    elif next_char == '#':
+        return None
+    elif next_char == '[':
+        straight = get_movable_blocks(warehouse, next_pos)
+        right = get_movable_blocks(warehouse, (next_pos[0], next_pos[1] + 1))
+        if straight is None or right is None:
+            return None
+        return straight.union(right).union([current_pos])
+    elif next_char == "]":
+        straight = get_movable_blocks(warehouse, next_pos)
+        left = get_movable_blocks(warehouse, (next_pos[0], next_pos[1] - 1))
+        if straight is None or left is None:
+            return None
+        return straight.union(left).union([current_pos])
+
+
 def step_right(warehouse: np.ndarray):
     """
     Operates in-place!!!!!!!
@@ -76,15 +105,34 @@ def score(warehouse: np.ndarray):
     return sum(x + (100 * y) for (y, x) in coords)
 
 
+def double_warehouse(warehouse: np.ndarray):
+    lookup = {
+        '.': ['.', '.'],
+        'O': ['[', ']'],
+        '#': ['#', '#'],
+        '@': ['@', '.']
+    }
+    result = []
+    for row in warehouse:
+        new_row = []
+        for i in row:
+            new_row.extend(lookup[i])
+        result.append(new_row)
+    return np.array(result)
+
+
 def main():
     images = []
 
-    inp = read_input("input.txt")
+    inp = read_input("test_input.txt")
+    warehouse = double_warehouse(inp.warehouse)
+    print(inp.warehouse)
+    print(warehouse)
     for move in inp.moves:
         # print(chr(27) + "[2J")
         # print(inp.warehouse)
         # images.append(convert_image(inp.warehouse).resize((300, 300), Image.NEAREST))
-        step(inp.warehouse, move)
+        step_down(warehouse)
 
     result = score(inp.warehouse)
     print(result)
