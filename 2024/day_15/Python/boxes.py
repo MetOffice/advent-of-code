@@ -33,23 +33,31 @@ def step(warehouse, dir: Literal['^', 'v', '<', '>']):
     match dir:
         case '>':
             step_right(warehouse)
+        case 'v':
+            step_down(warehouse)
         case '<':
             rotated = np.rot90(warehouse, 2)
             step_right(rotated)
         case '^':
-            rotated = np.rot90(warehouse, 3)
-            step_right(rotated)
-        case 'v':
-            rotated = np.rot90(warehouse, 1)
-            step_right(rotated)
+            flipped = np.flipud(warehouse)
+            step_down(flipped)
 
 
 def step_down(warehouse: np.ndarray):
     robot = find_robot(warehouse)
     movable = get_movable_blocks(warehouse, robot)
-    print(movable)
-    ## This seems to work. Do the rest.
+    if movable is not None:
+        do_moves(warehouse, movable)
 
+def do_moves(warehouse: np.ndarray, movable: set):
+    sorted_l = sorted(movable, key=lambda x: x[0], reverse=True)
+    for move in sorted_l:
+        ix1 = (move[0], move[1])
+        ix2 = (move[0] + 1, move[1])
+
+        before = warehouse[ix2]
+        warehouse[ix2] = warehouse[ix1]
+        warehouse[ix1] = before
 
 def get_movable_blocks(warehouse: np.ndarray, current_pos) -> set | None:
     direction = 1
@@ -100,7 +108,7 @@ def step_right(warehouse: np.ndarray):
 
 
 def score(warehouse: np.ndarray):
-    all_boxes = np.where(warehouse == 'O')
+    all_boxes = np.where(warehouse == '[')
     coords = zip(all_boxes[0], all_boxes[1])
     return sum(x + (100 * y) for (y, x) in coords)
 
@@ -124,7 +132,7 @@ def double_warehouse(warehouse: np.ndarray):
 def main():
     images = []
 
-    inp = read_input("test_input.txt")
+    inp = read_input("input.txt")
     warehouse = double_warehouse(inp.warehouse)
     print(inp.warehouse)
     print(warehouse)
@@ -132,9 +140,10 @@ def main():
         # print(chr(27) + "[2J")
         # print(inp.warehouse)
         # images.append(convert_image(inp.warehouse).resize((300, 300), Image.NEAREST))
-        step_down(warehouse)
+        step(warehouse, move)
+        # print(warehouse)
 
-    result = score(inp.warehouse)
+    result = score(warehouse)
     print(result)
 
     # images[0].save('warehouse.gif', save_all=True, append_images=images[1:], optimize=False, duration=10, loop=1)
