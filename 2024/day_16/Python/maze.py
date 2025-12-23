@@ -2,6 +2,7 @@ from queue import PriorityQueue
 from typing import NamedTuple, Any, Optional
 
 import numpy as np
+from numpy import savetxt
 
 
 def read_input(filename: str):
@@ -29,17 +30,17 @@ class Item(NamedTuple):
     cost: int
     position: tuple[int, int]
     direction: tuple[int, int]
-    parent: Optional["Item"]
+    parent: None | tuple["Item"] | tuple["Item", "Item"]
 
 
-def calculate_costs(maze, thingy: Item) -> list[Item]:
-    current_cost, point, direction, parent = thingy
+def calculate_costs(maze, item: Item) -> list[Item]:
+    current_cost, point, direction, parent = item
 
-    forward = Item(current_cost + 1, (point[0] + direction[0], point[1] + direction[1]), direction, thingy)
+    forward = Item(current_cost + 1, (point[0] + direction[0], point[1] + direction[1]), direction, item)
     left = Item(current_cost + 1001, (point[0] - direction[1], point[1] + direction[0]), (-direction[1], direction[0]),
-                thingy)
+                item)
     right = Item(current_cost + 1001, (point[0] + direction[1], point[1] - direction[0]), (direction[1], -direction[0]),
-                 thingy)
+                 item)
 
     valid_moves = [x for x in [forward, left, right] if maze[x.position] in '.E']
 
@@ -47,18 +48,37 @@ def calculate_costs(maze, thingy: Item) -> list[Item]:
 
 
 def bfs(maze: np.ndarray, start: tuple[int, int]):
-    start_direction = (0, 1)
-    visited = set()
+    start_direction = (0, 1) # East
+
+    positions: dict[tuple[int,int], Item] = dict()
+
     queue: PriorityQueue[Item] = PriorityQueue()
     queue.put(Item(0, start, start_direction, None))
 
     while True:
         nex = queue.get()
-        visited.add(nex.position)
+        positions[nex.position] =  nex
         if maze[nex.position] == "E":
+            d = debug_view(maze,positions)
             return nex.cost
-        things = calculate_costs(maze, nex)
-        [queue.put(t) for t in things if t.position not in visited]
+        possible_paths: list[Item] = calculate_costs(maze, nex)
+        for future_pos in possible_paths:
+            already_visited_pos = positions.get(future_pos.position,None)
+
+            if future_pos.position not in positions.keys() :
+                queue.put(future_pos)
+            else:
+                print(f"{already_visited_pos.position}={abs(future_pos.cost - already_visited_pos.cost)}")
+                if future_pos.cost == already_visited_pos.cost:
+                    print(f"TWO PARENTS! {already_visited_pos}")
+
+
+def debug_view(maze, positions: dict[tuple[int,int], Item]):
+    maze2 = maze.astype('<U5')
+    for pos in positions.values():
+        maze2[pos.position] = pos.cost
+    print()
+    savetxt("help.csv",maze2,"%s",",")
 
 
 def main():
