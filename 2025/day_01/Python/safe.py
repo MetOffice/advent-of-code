@@ -25,19 +25,22 @@ class Lock:
         self.zero_count = 0
 
     def apply(self, action: Instruction):
-        if action.dir == "R":
-            dry = self.pos + action.value
-        elif action.dir == "L":
-            dry = self.pos - action.value
-        else:
-            raise NotImplemented()
+        remaining = action.value
+        while remaining:
+            self.tick(action.dir)
+            self.check_zero()
+            remaining -= 1
 
-        div, mod = divmod(dry, 100)
-        if (self.pos == 0 and action.dir == "L"):
-            self.zero_count += abs(div)-1
-        elif (self.pos != 0 and div != 0) or mod == 0:
-            self.zero_count += max(abs(div), 1)
-        self.pos = mod
+    def tick(self, direction):
+        if direction == "R":
+            self.pos += 1
+        elif direction == "L":
+            self.pos -= 1
+        self.pos = self.pos % 100
+
+    def check_zero(self):
+        if self.pos == 0:
+            self.zero_count += 1
 
 
 def process(actions: list[Instruction]):
