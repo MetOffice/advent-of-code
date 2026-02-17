@@ -73,4 +73,4 @@ if __name__ == "__main__":
         individual_batteries.append(find_largest_battery_in_bank(bank, required_battery_length))
 
     result2 = sum(individual_batteries)
-    print(f"Part 2: {result2}")
+    print(f"Part 2: {result2}") # ! This is currently too low. Needs to be bigger than 164033353432636
