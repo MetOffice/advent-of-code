@@ -9,11 +9,11 @@ def load_input(file_path):
     return lines
 
 
-def lyes_way(bank:str) -> int:
+def lyes_way(bank: str) -> int:
     """Does the thing. But dear lord who knows how
     For part 1 only
     """
-    return max([int(a+b) for (a,b) in itertools.combinations(bank,2)])
+    return max([int(a + b) for (a, b) in itertools.combinations(bank, 2)])
 
 
 def find_first_largest_index(bank: str, required_battery_length: int) -> int:
@@ -29,7 +29,8 @@ def find_first_largest_index(bank: str, required_battery_length: int) -> int:
     """
     batteries = [int(battery) for battery in bank]
     # Don't find the largest one if it's last
-    largest_battery = str(max(batteries[:-required_battery_length]))
+    substr = batteries[:len(batteries) - required_battery_length + 1]
+    largest_battery = str(max(substr))
     return bank.find(largest_battery)
 
 
@@ -44,16 +45,22 @@ def find_largest_battery_in_bank(bank: str, required_battery_length: int) -> int
     Returns:
         int: The largest battery
     """
+    # print(bank)
     new_bank = bank
     indices = []
     while len(indices) < required_battery_length:
-        indices.append(find_first_largest_index(new_bank, required_battery_length-len(indices)))
-        new_bank = new_bank[indices[-1]:]
+        indices.append(
+            find_first_largest_index(new_bank, required_battery_length - len(indices))
+            + (len(bank) - len(new_bank))
+        )
+        new_bank = bank[indices[-1] + 1:]
+        # print(" "*10+("\033[36m" + bank[indices[-1]] + "\033[91m" + str(new_bank)).zfill(len(bank)).replace("0", " "))
 
     largest_battery = ""
     for index in indices:
         largest_battery += bank[index]
 
+    # print(largest_battery)
     return int(largest_battery)
 
 
@@ -73,4 +80,4 @@ if __name__ == "__main__":
         individual_batteries.append(find_largest_battery_in_bank(bank, required_battery_length))
 
     result2 = sum(individual_batteries)
-    print(f"Part 2: {result2}") # ! This is currently too low. Needs to be bigger than 164033353432636
+    print(f"Part 2: {result2}")
