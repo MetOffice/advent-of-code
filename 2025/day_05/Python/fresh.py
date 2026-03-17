@@ -1,7 +1,8 @@
 import tqdm
+from ranges import Range, RangeSet
 
 
-def load_input(file_path) :
+def load_input(file_path):
     with open(file_path, 'r') as file:
         file = file.read()
     ranges, veg = file.split("\n\n")
@@ -13,8 +14,7 @@ def load_input(file_path) :
     return ranges, veg
 
 
-def main():
-    ranges, veg = load_input('../input.txt')
+def part1(ranges, veg):
     result = 0
     for v in tqdm.tqdm(veg):
         for r in ranges:
@@ -22,7 +22,24 @@ def main():
                 # print(f"{v} is in range {r}")
                 result += 1
                 break
-    print(result)
+    print("Pt1:", result)
+
+
+def part2(ranges):
+    rangeset = RangeSet()
+    for r in ranges:
+        rangeset.add(Range(r[0], r[1], include_end=True))
+    count = 0
+    for r2 in rangeset.ranges():
+        count += r2.end - r2.start + 1
+    print("Pt2:", count)
+
+
+def main():
+    ranges, veg = load_input('../input.txt')
+    part1(ranges, veg)
+    part2(ranges)
+
 
 if __name__ == "__main__":
     main()
