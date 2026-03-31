@@ -27,10 +27,9 @@ def main():
     t = load_input("../input.txt")
     start = np.where(t == "S")
     t[(start[0] + 1, start[1])] = "|"
-    iterate_once(1, t)
 
     total = 0
-    for i in tqdm.tqdm(range(1, len(t)-1)):
+    for i in tqdm.trange(1, len(t)-1):
         total += iterate_once(i, t)
 
     print(total)
