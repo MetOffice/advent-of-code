@@ -1,5 +1,6 @@
 from functools import reduce
 import operator
+from typing import Set, Any
 
 import numpy as np
 
@@ -43,29 +44,60 @@ def node_already_in_cluster(clusters, node):
             return True
     return False
 
+def get_cluster_2(node: object, clusters: list[set]) -> Set | None:
+    for cluster in clusters:
+        if node in cluster:
+            return cluster
+    return None
 
 def main():
     lines = read_file()
     pairs = calc_pairs(lines)
-    first_thousand = sorted(pairs, key=lambda tup: tup[0])[:1000]
+    pairs_sorted = sorted(pairs, key=lambda tup: tup[0])
     print(lines)
-    print(first_thousand)
-    nodes = set()
-    for _, a, b in first_thousand:
-        nodes.add(a)
-        nodes.add(b)
-    print(nodes)
+    # print(pairs_sorted)
     clusters = []
-    for node in nodes:
-        if node_already_in_cluster(clusters, node):
-            continue
-        clusters.append(get_cluster(node, first_thousand, clusters))
-        # Part 2: can't use get_cluster, have to do incremental cluster
-        # update for each pair
-    clusters.sort(key=len, reverse=True)
-    print("All circuits ", clusters)
-    print(clusters[:3])
-    print(reduce(operator.mul, map(len, clusters[:3]), 1))
+    nodes_in_clusters: Set = set()
+    for pair in pairs_sorted:
+        # Add to clusters
+        # Neither node is in a cluster, create new cluster with both nodes
+        # One node is in a cluster, add the other node to that cluster
+        # Both nodes are in different clusters, merge the clusters
+        a = pair[1]
+        b = pair[2]
+        nodes_in_clusters.add(a)
+        nodes_in_clusters.add(b)
+
+        a_cluster: Set | None = get_cluster_2(a, clusters)
+        b_cluster: Set | None = get_cluster_2(b, clusters)
+
+        if a_cluster is None and b_cluster is None:
+            clusters.append({a,b})
+        elif a_cluster == b_cluster:
+            a_cluster.add(a)
+            a_cluster.add(b)
+        elif a_cluster is None and b_cluster is not None:
+            b_cluster.add(a)
+        elif a_cluster is not None and b_cluster is None:
+            a_cluster.add(b)
+        elif a_cluster != b_cluster:
+            a_cluster.update(b_cluster)
+            clusters.remove(b_cluster)
+
+        # Check
+        if len(nodes_in_clusters) == len(lines) and len(clusters) == 1:
+            print("DONE")
+            print(a)
+            print(b)
+            print(lines[a])
+            print(lines[b])
+            print("Pt2 Answer:",lines[a][0] * lines[b][0])
+            break
+
+
+
+
+    print("DONE")
 
 
 if __name__ == "__main__":
