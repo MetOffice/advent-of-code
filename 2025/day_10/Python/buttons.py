@@ -2,10 +2,18 @@ import itertools
 from functools import reduce
 from typing import NamedTuple
 
+import numpy as np
 
-def parse_button(b):
+
+def parse_button(b) -> set[int]:
     return {int(i) for i in b[1:-1].split(",")}
 
+def parse_button_bits(b, ind_len):
+    t = parse_button(b)
+    bit_array = [0]*ind_len
+    for i in t:
+        bit_array[i] = 1
+    return bit_array
 
 class Machine(NamedTuple):
     @classmethod
@@ -13,8 +21,9 @@ class Machine(NamedTuple):
         indicators, *buttons, joltage = item.strip().split(" ")
         ind = {i for i, c in enumerate(indicators[1:-1]) if c == "#"}
         butt = [parse_button(b) for b in buttons]
+        butt_mask = [parse_button_bits(b, len(indicators)-2) for b in buttons]
         jolt = [int(i) for i in joltage[1:-1].split(",")]
-        return cls(ind, butt, jolt)
+        return cls(ind, butt, jolt, butt_mask)
 
     def solve(self):
         for i in range(len(self.buttons)):
@@ -28,9 +37,19 @@ class Machine(NamedTuple):
             return True
         return False
 
+    def solve_pt2(self):
+        button_matrix = np.linalg.pinv(np.array(self.butt_mask).T)
+        joltage_matrix = np.array(self.joltage)
+
+        result = button_matrix @ joltage_matrix
+        print("HELP")
+
+
+
     indicators: set[int]
     buttons: list[set[int]]
     joltage: list[int]
+    butt_mask: list[list[int]]
 
 
 def read_file():
@@ -41,7 +60,7 @@ def read_file():
 
 def main():
     machines: list[Machine] = read_file()
-    result = [m.solve() for m in machines]
+    result = [m.solve_pt2() for m in machines]
     print(sum(result))
 
 
