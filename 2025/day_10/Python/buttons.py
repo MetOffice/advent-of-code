@@ -3,11 +3,12 @@ from functools import reduce
 from typing import NamedTuple, Self
 
 import numpy as np
+from scipy.optimize import milp, LinearConstraint
 
 from tqdm import tqdm
 
-from sympy.matrices.normalforms import smith_normal_decomp
-from sympy import Matrix, ZZ
+# from sympy.matrices.normalforms import smith_normal_decomp
+# from sympy import Matrix, ZZ
 
 
 def parse_button(b) -> set[int]:
@@ -53,37 +54,47 @@ class Machine(NamedTuple):
         butt_matrix = np.array(self.butt_mask)
         # button_matrix = np.linalg.pinv(np.array(self.butt_mask).T)
         A = butt_matrix.T
+        return int(
+            milp(
+                np.ones(A.shape[1]),
+                integrality=1,
+                constraints=LinearConstraint(
+                    A, lb=self.joltage, ub=self.joltage
+                ),
+            ).fun
+        )
         # print("A", Matrix(A))
-        joltage_matrix = np.array(self.joltage)
-        C = joltage_matrix
-        B, U, V = smith_normal_decomp(Matrix(A), domain=ZZ)
-        for i in range(np.min(B.shape)):
-            if B[i, i] == 0:
-                k = i
-                break
-        else:
-            k = np.min(B.shape)
-        # print(B, U, V)
-        # print("U, C", U, C)
-        D = U @ C
-        # print("D", D)
-        H = np.zeros(A.shape[1], dtype=np.int64)
-        min_presses = 1000000000
-        min_presses_X = np.zeros(V.shape[0])
-        r = np.max(C)  # This takes too long
-        for stuff in itertools.product(*((range(-r, r),) * (len(H) - k))):
-            for i in range(len(H)):
-                if i < k:
-                    H[i] = D[i] / B[i, i]
-                else:
-                    H[i] = stuff[i - k]
-            X = V @ H
-            presses = np.sum(X)
-            if np.min(X) >= 0 and presses < min_presses:
-                min_presses = presses
-                min_presses_X = X
-            # print("X, np.sum(X)", X, np.sum(X))
-            # print("A @ X", A @ X)
+        # joltage_matrix = np.array(self.joltage)
+        # C = joltage_matrix
+        # B, U, V = smith_normal_decomp(Matrix(A), domain=ZZ)
+        # for i in range(np.min(B.shape)):
+        #     if B[i, i] == 0:
+        #         k = i
+        #         break
+        # else:
+        #     k = np.min(B.shape)
+        # # print(B, U, V)
+        # # print("U, C", U, C)
+        # D = U @ C
+        # # print("D", D)
+        # H = np.zeros(A.shape[1], dtype=np.int64)
+        # min_presses = 1000000000
+        # min_presses_X = np.zeros(V.shape[0])
+        # min_presses_H = np.zeros(A.shape[1])
+        # for i in range(k):
+        #     H[i] = D[i] / B[i, i]
+        # X = V @ H
+        # print("X", X)
+        # for i in range(k, len(H)):
+        #     H_ = np.zeros(A.shape[1], dtype=np.int64)
+        #     H_[i] = 1
+        #     print(f"V @ H_{i}", V @ H_)
+        # raise NotImplementedError
+        # print("X, np.sum(X)", X, np.sum(X))
+        # print("A @ X", A @ X)
+        # print(min_presses)
+        # print("V", V)
+        # print("H", min_presses_H, min_presses_H[k:])
         # print("X", min_presses_X)
         # print("min_presses", min_presses)
         # max_joltage = np.max(joltage_matrix)
@@ -103,7 +114,7 @@ class Machine(NamedTuple):
         # result = button_matrix @ joltage_matrix
         # print(result)
         # print("HELP")
-        return min_presses
+        # return min_presses
 
     indicators: set[int]
     buttons: list[set[int]]
@@ -112,7 +123,7 @@ class Machine(NamedTuple):
 
 
 def read_file():
-    with open("../test_input.txt", "r") as file:
+    with open("../input.txt", "r") as file:
         lines = file.readlines()
         return [Machine.from_line(item) for item in lines]
 
