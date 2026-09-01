@@ -1,5 +1,6 @@
 from functools import cache
 
+
 def load_input(file_path) -> dict[str, list[str]]:
     with open(file_path, "r") as f:
         lines = f.read().splitlines()
@@ -21,6 +22,7 @@ def is_out(string):
     else:
         return False
 
+
 @cache
 def count_paths(device):
     num_paths = 0
@@ -31,24 +33,23 @@ def count_paths(device):
             num_paths += count_paths(sub_device)
     return num_paths
 
+
 @cache
-def iterate_paths(device: str) -> list[list[str]]:
-    seen_thing: list[list[str]] = []
+def count_paths2(device, seen_dac, seen_fft):
+    seen_dac |= device == "dac"
+    seen_fft |= device == "fft"
+    num_paths = 0
     for sub_device in PATHS[device]:
         if is_out(sub_device):
-            seen_thing.append(["out"])
+            if seen_dac and seen_fft :
+                num_paths += 1
         else:
-            seen_thing.extend([sub_device, *path] for path in iterate_paths(sub_device))
-    return seen_thing
+            num_paths += count_paths2(sub_device, seen_dac, seen_fft)
+    return num_paths
 
 if __name__ == "__main__":
     PATHS = load_input("input.txt")
-    start = "you"
-
-    partA = count_paths(start)
-    print("Part A:", partA)
-
-    # DON'T RUN THIS IT WILL BREAK THINGS
-    #partB_paths = iterate_paths("svr")
-    #okay_paths = [path for path in partB_paths if "dac" in path and "fft" in path]
-    #print("Part B:", len(okay_paths))
+    partA = count_paths("you")
+    print("Part A", partA)
+    partB = count_paths2("svr", False, False)
+    print("Part B", partB)
