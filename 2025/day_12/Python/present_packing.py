@@ -3,6 +3,8 @@ from functools import cache
 from typing import Literal, Self
 import numpy as np
 
+from frozendict import frozendict
+
 
 type D4 = Literal["1", "2", "3", "4", "1F", "2F", "3F", "4F"]
 
@@ -11,7 +13,10 @@ type D4 = Literal["1", "2", "3", "4", "1F", "2F", "3F", "4F"]
 class Present:
     idx: int
     shape: np.ndarray
-    shapes: dict[D4, np.ndarray]
+    shapes: frozendict[D4, np.ndarray]
+
+    def __hash__(self) -> int:
+        return hash(("present", self.idx))
 
     @classmethod
     def parse_present(cls, p) -> Self:
@@ -19,18 +24,27 @@ class Present:
         shape_split = shape.strip().split("\n")
         shape = np.array([[i == "#" for i in o] for o in shape_split])
 
+        print("On shape", idx)
+        print(shape)
+
         shapes = {}
         for rotation in [0, 1, 2, 3]:
             rotated_shape = np.rot90(shape, rotation)
             for flip, new_shape in [
                 ("", rotated_shape),
-                ("F", np.flip(rotated_shape)),
+                ("F", np.fliplr(rotated_shape)),
             ]:
-                if not any(np.array_equal(new_shape, a) for a in shapes):
+                print(f"{rotation}{flip} looks like:")
+                print(new_shape)
+                print("Existing shapes:")
+                print(list(shapes.values()))
+                if not any(
+                    np.array_equal(new_shape, a) for a in shapes.values()
+                ):
                     shapes[f"{rotation}{flip}"] = new_shape
 
         ##Symmetries as well
-        return cls(int(idx), shape, shapes)
+        return cls(int(idx), shape, frozendict(shapes))
 
 
 def parse_present_shapes(present_shapes: list[str]) -> list[Present]:
@@ -62,7 +76,7 @@ class PlacedPresent:
 
 @dataclass(frozen=True)
 class PopulatedGrid:
-    presents: tuple[PlacedPresent, ...]
+    presents: frozenset[PlacedPresent]
     grid: np.ndarray = field(hash=False)
 
 
@@ -74,6 +88,13 @@ def can_populate(
     remaining_presents: tuple[int, ...],
     present_shapes: tuple[Present, ...],
 ) -> bool:
+    import matplotlib.pyplot as plt
+
+    print(grid.grid)
+    plt.imshow(grid.grid)
+    plt.show(block=False)
+    print(remaining_presents)
+    # input()
     try:
         shape_index, _ = next(
             (i, n) for i, n in enumerate(remaining_presents) if n > 0
@@ -88,20 +109,21 @@ def can_populate(
                 cutout = grid_copy[
                     i : i + shape.shape[0], j : j + shape.shape[1]
                 ]
-                cutout &= shape
-                if not np.any(cutout):
+                if not np.any(cutout & shape):
                     cutout |= shape
                     next_remaining_presents = tuple(
                         n - 1 if i == shape_index else n
                         for i, n in enumerate(remaining_presents)
                     )
+                    # Might be something weird going on in the caching, maybe
+                    # try maintaining our own cache rather than functools
+                    # at least to see errors better
                     if can_populate(
                         width,
                         height,
                         PopulatedGrid(
-                            presents=(
-                                *grid.presents,
-                                PlacedPresent(shape_index, i, j, d4),
+                            presents=grid.presents.union(
+                                {PlacedPresent(shape_index, i, j, d4)}
                             ),
                             grid=grid_copy,
                         ),
@@ -128,9 +150,29 @@ def load_file(file):
 
 
 def main():
-    a, b = load_file("input.txt")
+    presents, trees = load_file("test_input.txt")
     # Need to use can_populate on all regions and count up ok bye
-    print(a, b)
+    print(presents, trees)
+    try:
+        print(
+            sum(
+                can_populate(
+                    tree.width,
+                    tree.height,
+                    PopulatedGrid(
+                        frozenset(),
+                        np.zeros((tree.width, tree.height), dtype=bool),
+                    ),
+                    tuple(tree.present_quantities),
+                    tuple(presents),
+                )
+                for tree in trees
+            )
+        )
+    except Exception as e:
+        import traceback
+
+        traceback.print_exc(-3)
 
 
 if __name__ == "__main__":
