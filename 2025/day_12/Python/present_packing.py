@@ -1,5 +1,5 @@
-from dataclasses import dataclass, field
-from functools import cache
+from dataclasses import dataclass
+import hashlib
 from typing import Literal, Self
 import numpy as np
 
@@ -14,9 +14,6 @@ class Present:
     idx: int
     shape: np.ndarray
     shapes: frozendict[D4, np.ndarray]
-
-    def __hash__(self) -> int:
-        return hash(("present", self.idx))
 
     @classmethod
     def parse_present(cls, p) -> Self:
@@ -74,24 +71,37 @@ class PlacedPresent:
     flippiness: D4
 
 
-@dataclass(frozen=True)
-class PopulatedGrid:
-    presents: frozenset[PlacedPresent]
-    grid: np.ndarray = field(hash=False)
+can_populate_cache: dict[int, bool] = {}
 
 
-@cache
 def can_populate(
     width: int,
     height: int,
-    grid: PopulatedGrid,
+    grid: np.ndarray,
     remaining_presents: tuple[int, ...],
     present_shapes: tuple[Present, ...],
 ) -> bool:
+    args = (
+        width,
+        height,
+        hashlib.sha256(grid.tobytes()).hexdigest(),
+        remaining_presents,
+    )
+    args_hash = hash(args)
+    try:
+        if args_hash in can_populate_cache:
+            return can_populate_cache[args_hash]
+        else:
+            print("new hash", args_hash)
+            print("cache length", len(can_populate_cache))
+    except ValueError:
+        print(args)
+        raise
+
     import matplotlib.pyplot as plt
 
-    print(grid.grid)
-    plt.imshow(grid.grid)
+    print(grid)
+    plt.imshow(grid)
     plt.show(block=False)
     print(remaining_presents)
     # input()
@@ -100,12 +110,13 @@ def can_populate(
             (i, n) for i, n in enumerate(remaining_presents) if n > 0
         )
     except StopIteration:
+        can_populate_cache[args_hash] = True
         return True
 
     for d4, shape in present_shapes[shape_index].shapes.items():
         for i in range(width - shape.shape[0] + 1):
             for j in range(height - shape.shape[1] + 1):
-                grid_copy = grid.grid.copy()
+                grid_copy = grid.copy()
                 cutout = grid_copy[
                     i : i + shape.shape[0], j : j + shape.shape[1]
                 ]
@@ -121,17 +132,14 @@ def can_populate(
                     if can_populate(
                         width,
                         height,
-                        PopulatedGrid(
-                            presents=grid.presents.union(
-                                {PlacedPresent(shape_index, i, j, d4)}
-                            ),
-                            grid=grid_copy,
-                        ),
+                        grid_copy,
                         next_remaining_presents,
                         present_shapes,
                     ):
+                        can_populate_cache[args_hash] = True
                         return True
 
+    can_populate_cache[args_hash] = False
     return False
 
 
@@ -151,7 +159,8 @@ def load_file(file):
 
 def main():
     presents, trees = load_file("test_input.txt")
-    # Need to use can_populate on all regions and count up ok bye
+    # Probably works now if we do early out on impossible ones
+    # But the full tree search is still pretty big
     print(presents, trees)
     try:
         print(
@@ -159,10 +168,7 @@ def main():
                 can_populate(
                     tree.width,
                     tree.height,
-                    PopulatedGrid(
-                        frozenset(),
-                        np.zeros((tree.width, tree.height), dtype=bool),
-                    ),
+                    np.zeros((tree.width, tree.height), dtype=bool),
                     tuple(tree.present_quantities),
                     tuple(presents),
                 )
