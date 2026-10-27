@@ -14,11 +14,13 @@ class Present:
     idx: int
     shape: np.ndarray
     shapes: frozendict[D4, np.ndarray]
+    area: int
 
     @classmethod
-    def parse_present(cls, p) -> Self:
+    def parse_present(cls, p: str) -> Self:
         idx, shape = p.split(":")
         shape_split = shape.strip().split("\n")
+        area = shape.count('#')
         shape = np.array([[i == "#" for i in o] for o in shape_split])
 
         print("On shape", idx)
@@ -41,7 +43,7 @@ class Present:
                     shapes[f"{rotation}{flip}"] = new_shape
 
         ##Symmetries as well
-        return cls(int(idx), shape, frozendict(shapes))
+        return cls(int(idx), shape, frozendict(shapes), area)
 
 
 def parse_present_shapes(present_shapes: list[str]) -> list[Present]:
@@ -157,11 +159,28 @@ def load_file(file):
         print(contents)
 
 
+def check_will_fit(present_shapes: list[Present], tree: Tree) -> bool:
+    tree_area = tree.width * tree.height
+    present_area = sum(
+        (present_shapes[i].area * tree.present_quantities[i]) for i in range(len(tree.present_quantities)))
+    if present_area > tree_area:
+        return False
+    return True
+
+def areas_that_are_possible(present_shapes: list[Present], trees: list[Tree]):
+    return list(filter(lambda t: check_will_fit(present_shapes, t), trees))
+
+
+
 def main():
-    presents, trees = load_file("test_input.txt")
+    presents, trees = load_file("input.txt")
     # Probably works now if we do early out on impossible ones
     # But the full tree search is still pretty big
     print(presents, trees)
+    trees_checked = areas_that_are_possible(presents, trees)
+    print("Apparently the answer is just: "+ str(len(trees_checked)) + " 🙄")
+    return
+    print(presents,trees)
     try:
         print(
             sum(
